@@ -1,1943 +1,1312 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="DIYMatch">
-  
-  <title>DIYMatch - AI-Powered DIY Assistant</title>
-  
-  <!-- Icon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔧</text></svg>">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com?3.4.0"></script>
-  
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  
-  <!-- EmailJS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  
-  <!-- Stripe -->
-  <script src="https://js.stripe.com/v3/"></script>
-  
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    
-    input, textarea, select {
-      -webkit-user-select: text;
-      user-select: text;
-    }
-    
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-      background-color: #f9fafb;
-    }
-    
-    .safe-area-top { padding-top: env(safe-area-inset-top); }
-    .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-    
-    .mobile-touch {
-      cursor: pointer;
-      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-      transition: all 0.2s ease;
-    }
-    
-    .mobile-touch:active {
-      transform: scale(0.98);
-      opacity: 0.8;
-    }
-    
-    .loading-pulse { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    
-    .analysis-progress {
-      background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
-      background-size: 200% 100%;
-      animation: shimmer 2s linear infinite;
-    }
-    
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    
-    button { touch-action: manipulation; }
-    input[type="text"], input[type="email"], input[type="password"], input[type="tel"], textarea, select { font-size: 16px !important; }
-    
-    .splash-screen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%);
-      display: flex; align-items: center; justify-content: center; z-index: 9999; color: white;
-    }
+import React, { useState, useEffect, useContext, createContext } from 'react';
 
-    .screenrec-widget {
-      position: fixed;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #dc2626;
-      color: white;
-      padding: 12px 6px;
-      border-radius: 8px 0 0 8px;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 1000;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+// ============================================================================
+// CONFIGURATION & DATA
+// ============================================================================
 
-    .screenrec-widget:hover {
-      background: #b91c1c;
-      padding-left: 10px;
-    }
+const APP_CONFIG = {
+  name: 'DIYMatch',
+  version: '3.0.0',
+  description: 'AI-Powered DIY Assistant with Expert Network & Local Parts',
+  adminEmail: 'yahye21@hotmail.com',
+  adminPassword: 'Graphics41_',
+  adminName: 'Yahye Admin',
+  supportEmail: 'support@diymatch.co.uk'
+};
 
-    .chart-container { height: 300px; }
-    .stat-card { transition: all 0.3s ease; }
-    .stat-card:hover { transform: translateY(-2px); }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
+// In-memory data storage
+const registeredUsers = new Map();
+const adminMessages = [];
+const expertApplications = new Map();
+const userActivity = [];
+
+// Initialize sample data
+const sampleUsers = [
+  { email: 'john@example.com', name: 'John Smith', user_type: 'user' },
+  { email: 'expert@example.com', name: 'Mike Expert', user_type: 'expert' }
+];
+
+sampleUsers.forEach(user => {
+  registeredUsers.set(user.email, {
+    ...user,
+    id: `user_${Date.now()}_${Math.random()}`,
+    created_at: new Date().toISOString(),
+    location: 'London',
+    preferences: { theme: 'light', notifications: true }
+  });
+});
+
+// ============================================================================
+// CONTEXTS
+// ============================================================================
+
+const AuthContext = createContext();
+const DarkModeContext = createContext();
+
+const useAuth = () => useContext(AuthContext);
+const useDarkMode = () => useContext(DarkModeContext);
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+const triggerHaptic = (type = 'light') => {
+  // Mock haptic feedback for web
+  console.log(`Haptic feedback: ${type}`);
+};
+
+const dbOperations = {
+  async createUser(userData) {
+    const user = {
+      id: `user_${Date.now()}`,
+      ...userData,
+      created_at: new Date().toISOString(),
+      location: 'London',
+      preferences: { theme: 'light', notifications: true }
+    };
+    registeredUsers.set(userData.email.toLowerCase(), user);
+    
+    userActivity.push({
+      type: 'user_registered',
+      timestamp: new Date().toISOString(),
+      details: { email: userData.email, type: userData.user_type },
+      source: 'registration'
+    });
+    
+    return { success: true, user };
+  },
   
-  <!-- Splash Screen -->
-  <div id="splash-screen" class="splash-screen">
-    <div class="text-center">
-      <div class="text-6xl mb-4 animate-bounce">🔧</div>
-      <h1 class="text-3xl font-bold mb-2">DIYMatch</h1>
-      <p class="text-lg opacity-80">AI-Powered DIY Assistant</p>
-      <div class="mt-8">
-        <div class="loading-pulse inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+  async getUserByEmail(email) {
+    return registeredUsers.get(email.toLowerCase());
+  },
+  
+  async saveMessage(messageData) {
+    const messageId = Date.now();
+    const message = { id: messageId, ...messageData, timestamp: new Date().toISOString() };
+    
+    if (messageData.message_type === 'contact_form') {
+      adminMessages.unshift(message);
+    }
+    
+    userActivity.push({
+      type: 'message_received',
+      timestamp: new Date().toISOString(),
+      details: { type: messageData.message_type, from: messageData.sender_email },
+      source: 'contact'
+    });
+    
+    return { success: true, id: messageId };
+  },
+
+  async saveExpertApplication(applicationData) {
+    const applicationId = Date.now();
+    const application = {
+      id: applicationId,
+      ...applicationData,
+      status: 'pending',
+      submitted_at: new Date().toISOString()
+    };
+    
+    expertApplications.set(applicationId, application);
+    return { success: true, id: applicationId };
+  }
+};
+
+// ============================================================================
+// COMPONENTS
+// ============================================================================
+
+const WelcomePage = ({ navigateToPage }) => {
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { user } = useAuth();
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-opacity-90 backdrop-blur-lg">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center space-x-2">
+            <div className="text-3xl">🔧</div>
+            <h1 className="text-xl font-bold">DIYMatch</h1>
+          </div>
+          <button
+            onClick={() => { triggerHaptic('light'); toggleDarkMode(); }}
+            className={`p-2 rounded-lg transition-all shadow-sm ${
+              isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'
+            }`}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
+      </div>
+      
+      {/* Hero Section */}
+      <div className="text-center py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Welcome to <span className="text-blue-600">DIYMatch</span>
+          </h1>
+          <p className={`text-xl md:text-2xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Connecting DIY Enthusiasts with Expert Professionals
+          </p>
+          <p className={`text-lg mb-12 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-3xl mx-auto`}>
+            Whether you're stuck on a home repair, need expert guidance, or want instant AI-powered solutions to your DIY problems, DIYMatch bridges the gap between those who need help and skilled professionals ready to assist.
+          </p>
+        </div>
+      </div>
+      
+      {/* Action Buttons */}
+      <div className="px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                if (user) { navigateToPage('analyze'); } else { navigateToPage('signup'); }
+              }}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 px-6 rounded-xl text-lg font-semibold shadow-lg flex items-center justify-center space-x-2 hover:shadow-xl transition-all"
+            >
+              <span>🚀</span>
+              <span>{user ? 'Start AI Analysis' : '🔬 Get FREE AI Analysis'}</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                triggerHaptic('medium');
+                navigateToPage('expert-application');
+              }}
+              className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-6 px-6 rounded-xl text-lg font-semibold shadow-lg flex items-center justify-center space-x-2 hover:shadow-xl transition-all"
+            >
+              <span>👨‍🔧</span>
+              <span>Help Others as an Expert</span>
+            </button>
+            
+            {!user ? (
+              <button
+                onClick={() => { triggerHaptic('medium'); navigateToPage('login'); }}
+                className={`border-2 py-6 px-6 rounded-xl text-lg font-semibold transition-all flex items-center justify-center space-x-2 hover:shadow-lg ${
+                  isDarkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                }`}
+              >
+                <span>🔑</span>
+                <span>Sign In</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => { triggerHaptic('medium'); navigateToPage('dashboard'); }}
+                className={`border-2 py-6 px-6 rounded-xl text-lg font-semibold transition-all flex items-center justify-center space-x-2 hover:shadow-lg ${
+                  isDarkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                }`}
+              >
+                <span>🏠</span>
+                <span>My Dashboard</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* How It Works Section */}
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} py-16`}>
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">How DIYMatch Works</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🤖</span>
+              </div>
+              <h3 className="text-xl font-bold mb-4">FREE AI Analysis</h3>
+              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                Upload a photo and get completely free problem identification, then upgrade for video solutions.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="text-xl font-bold mb-4">Expert Connection</h3>
+              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                When DIY isn't enough, instantly connect with verified local professionals who can help.
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🛡️</span>
+              </div>
+              <h3 className="text-xl font-bold mb-4">Safety First</h3>
+              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                Our AI knows when a job requires professional help and will recommend expert assistance for safety.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Contact Section */}
+      <div className="py-16 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-lg text-center`}>
+            <div className="flex items-center justify-center mb-4">
+              <span className="text-3xl mr-3">📞</span>
+              <h3 className="text-2xl font-bold">Get in Touch</h3>
+            </div>
+            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-6`}>
+              Have questions about DIYMatch? Need support? We're here to help!
+            </p>
+            <button
+              onClick={() => { triggerHaptic('medium'); navigateToPage('contact'); }}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg font-semibold transition-all"
+            >
+              💬 Contact Us
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <footer className={`text-center py-8 px-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-4 mb-6 text-left`}>
+          <h4 className="font-bold mb-2 text-sm">⚠️ Important Legal Notice</h4>
+          <p className="text-xs leading-relaxed">
+            DIYMatch is an information and referral platform only. We do not employ experts or guarantee work quality. 
+            All AI analysis is for general guidance only - NOT professional advice. DIY work carries risks of injury, 
+            property damage, or death. Always consult certified professionals for electrical, gas, plumbing, or structural work. 
+            Users assume full responsibility for their safety and actions. DIYMatch accepts no liability for consequences 
+            of using our service or following any recommendations.
+          </p>
+        </div>
+        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          © 2024 DIYMatch - Connecting Problems with Solutions
+        </p>
+        <div className="mt-3 text-xs text-gray-500">Version {APP_CONFIG.version} - Production Ready</div>
+      </footer>
+    </div>
+  );
+};
+
+const LoginPage = ({ navigateToPage }) => {
+  const { login } = useAuth();
+  const { isDarkMode } = useDarkMode();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    setLoading(true);
+    await triggerHaptic('medium');
+    
+    const success = await login(email, password);
+    if (!success) {
+      await triggerHaptic('error');
+      alert('❌ Login failed. Please check your credentials or try signing up.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-purple-50'} p-4`}>
+      <div className={`${cardClasses} p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md`}>
+        <div className="flex items-center space-x-2 mb-6">
+          <div className="text-3xl">🔧</div>
+          <h1 className="text-2xl font-bold">Sign In to DIYMatch</h1>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full border rounded-xl px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="Enter your email address"
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full border rounded-xl px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="Enter your password"
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+            />
+          </div>
+          
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-semibold transition-all text-lg"
+          >
+            {loading ? 'Signing In...' : '🔑 Sign In'}
+          </button>
+        </div>
+        
+        <div className="mt-6 text-center space-y-3">
+          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            Don't have an account?
+          </p>
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('signup'); }}
+            className="w-full text-blue-600 hover:text-blue-700 font-medium py-2"
+          >
+            Create Free Account
+          </button>
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'} py-2`}
+          >
+            🏠 Back to Home
+          </button>
+        </div>
+        
+        <div className="mt-6 p-3 bg-blue-50 rounded-lg text-center">
+          <p className="text-xs text-blue-600">
+            Admin Access: Use {APP_CONFIG.adminEmail} / {APP_CONFIG.adminPassword}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
+  );
+};
 
-  <!-- ScreenRec Widget -->
-  <div class="screenrec-widget mobile-touch" onclick="window.open('https://screenrec.com', '_blank')">
-    ScreenRec
-  </div>
+const SignupPage = ({ navigateToPage }) => {
+  const { login } = useAuth();
+  const { isDarkMode } = useDarkMode();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [userType, setUserType] = useState('user');
+  const [loading, setLoading] = useState(false);
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
 
-  <!-- React and React DOM from CDN -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!name || !email || !password) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    const agreed = confirm('By creating an account, you agree to DIYMatch terms and conditions. Continue?');
+    if (!agreed) return;
 
-  <script>
-    (async function() {
-      // Wait for React to load before executing the main app code
-      function waitForReact() {
-        return new Promise((resolve) => {
-          const checkReact = () => {
-            if (typeof React !== 'undefined' && typeof ReactDOM !== 'undefined') {
-              resolve();
-            } else {
-              setTimeout(checkReact, 50);
-            }
-          };
-          checkReact();
-        });
-      }
+    setLoading(true);
+    await triggerHaptic('medium');
+    
+    if (registeredUsers.has(email.toLowerCase())) {
+      await triggerHaptic('error');
+      alert('❌ Email already registered. Please use a different email or sign in.');
+      setLoading(false);
+      return;
+    }
+    
+    const success = await login(email, password, userType, name);
+    if (!success) {
+      await triggerHaptic('error');
+      alert('❌ Registration failed. Please try again.');
+    }
+    setLoading(false);
+  };
 
-      // Wait for React to be available
-      await waitForReact();
+  return (
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-purple-50'} p-4`}>
+      <div className={`${cardClasses} p-8 rounded-2xl shadow-xl w-full max-w-md`}>
+        <h1 className="text-2xl font-bold mb-6">Join DIYMatch</h1>
+        
+        <div className="space-y-4">
+          <select
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
+            className={`w-full border rounded-xl px-4 py-3 text-base ${
+              isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+            }`}
+          >
+            <option value="user">DIY Enthusiast</option>
+            <option value="expert">Expert/Professional</option>
+          </select>
+
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={`w-full border rounded-xl px-4 py-3 text-base ${
+              isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+            }`}
+            placeholder="Full Name"
+          />
+          
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`w-full border rounded-xl px-4 py-3 text-base ${
+              isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+            }`}
+            placeholder="Email Address"
+          />
+          
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={`w-full border rounded-xl px-4 py-3 text-base ${
+              isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+            }`}
+            placeholder="Password"
+          />
+          
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl disabled:opacity-50 font-semibold transition-all text-lg"
+          >
+            {loading ? 'Creating Account...' : '🚀 Create Account'}
+          </button>
+        </div>
+        
+        <div className="mt-6 text-center space-y-3">
+          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            Already have an account?{' '}
+            <button
+              onClick={() => { triggerHaptic('light'); navigateToPage('login'); }}
+              className="text-blue-600 hover:underline ml-1"
+            >
+              Sign in
+            </button>
+          </p>
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'}`}
+          >
+            🏠 Back to Home
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ContactPage = ({ navigateToPage }) => {
+  const { isDarkMode } = useDarkMode();
+  const { user } = useAuth();
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    subject: '',
+    message: '',
+    urgency: 'normal'
+  });
+  const [loading, setLoading] = useState(false);
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    setLoading(true);
+    await triggerHaptic('medium');
+
+    try {
+      await dbOperations.saveMessage({
+        sender_name: formData.name,
+        sender_email: formData.email,
+        subject: formData.subject,
+        content: formData.message,
+        message_type: 'contact_form',
+        status: 'unread',
+        platform: 'web',
+        urgency: formData.urgency
+      });
+
+      await triggerHaptic('success');
+      alert('✅ Message sent successfully! We\'ll get back to you soon.');
       
-      // Now React is definitely available
-      const { useState, useEffect, useContext, createContext } = React;
-      const { createElement: h, Fragment } = React;
-
-      // ============================================================================
-      // ENHANCED CONFIGURATION & CREDENTIALS
-      // ============================================================================
+      setFormData({
+        name: user?.name || '',
+        email: user?.email || '',
+        subject: '',
+        message: '',
+        urgency: 'normal'
+      });
       
-      const APP_CONFIG = {
-        name: 'DIYMatch',
-        version: '3.0.0',
-        description: 'AI-Powered DIY Assistant with Expert Network & Local Parts',
-        adminEmail: 'yahye21@hotmail.com',
-        adminPassword: 'Graphics41_',
-        adminName: 'Yahye Admin',
-        supportEmail: 'support@diymatch.co.uk',
-        replyToEmail: 'noreply@diymatch.co.uk'
-      };
+    } catch (error) {
+      await triggerHaptic('error');
+      alert('❌ Failed to send message. Please try again.');
+    }
+    
+    setLoading(false);
+  };
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4`}>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className="p-2"
+          >
+            ←
+          </button>
+          <div>
+            <h1 className="text-xl font-bold">💬 Contact Support</h1>
+            <p className="text-sm text-gray-500">Get help with your DIY projects</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4">
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+          <h3 className="text-lg font-bold mb-4">📝 Send us a Message</h3>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="Your Name"
+              />
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="your@email.com"
+              />
+            </div>
+
+            <input
+              type="text"
+              value={formData.subject}
+              onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+              className={`w-full border rounded-lg px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="Subject"
+            />
+
+            <textarea
+              value={formData.message}
+              onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+              rows={6}
+              className={`w-full border rounded-lg px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="Describe your question or issue in detail..."
+            />
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg disabled:opacity-50"
+            >
+              {loading ? 'Sending Message...' : '📧 Send Message'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ExpertApplicationPage = ({ navigateToPage }) => {
+  const { isDarkMode } = useDarkMode();
+  const [formData, setFormData] = useState({
+    name: '', email: '', phone: '', postcode: '', profession: '', 
+    experience: '', certifications: '', description: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.phone || !formData.postcode || 
+        !formData.profession || !formData.experience || !formData.certifications || !formData.description) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    const agreed = confirm('By submitting, you agree to expert terms and verification process. Continue?');
+    if (!agreed) return;
+
+    setLoading(true);
+    await triggerHaptic('medium');
+
+    try {
+      await dbOperations.saveExpertApplication({
+        ...formData,
+        agreed_to_terms: true
+      });
+
+      await triggerHaptic('success');
+      alert('✅ Application submitted! We\'ll review and get back to you within 48 hours.');
+      navigateToPage('home');
       
-      const SUPABASE_URL = 'https://plifgyjkhshbftkjxfhp.supabase.co';
-      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsaWZneWpraHNoYmZ0a2p4ZmhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MTA1NTIsImV4cCI6MjA2NzI4NjU1Mn0.q0zNZDRS2YI_cmbxqeCrkd58ajCWKur3tWOoQLtWF2g';
-      
-      const EMAILJS_SERVICE_ID = 'service_pbc6lzb';
-      const EMAILJS_TEMPLATE_ID = 'template_g7uew2j';
-      const EMAILJS_PUBLIC_KEY = 'nTJ5ttlzS1KujQXNA';
-      
-      const AI_CONFIG = {
-        useRealAI: false,
-        openaiApiKey: 'your-openai-api-key-here',
-        analysisTimeout: 8000,
-        supportedFormats: ['image/jpeg', 'image/png', 'image/webp']
-      };
-
-      const STRIPE_CONFIG = {
-        publishableKey: 'pk_live_51RiLhxRpZHx7oR80FgKogmF1Fm4JQMwgeTbtFMTY7t27CLDJcO9iuOZb7E6viJSJVVSsT4sHcCXbFkFuVxRpnLJn00roKxt4Vs'
-      };
-
-      // ============================================================================
-      // ENHANCED GLOBAL STATE & DATA STORAGE (PRODUCTION READY)
-      // ============================================================================
-      
-      const registeredUsers = new Map();
-      const adminMessages = [];
-      const userMessages = new Map();
-      const expertApplications = new Map();
-      const userActivity = [];
-      const revenueData = [];
-      const expertProfiles = new Map();
-      const localStores = new Map();
-      const userAnalysisHistory = new Map();
-      const userOrders = new Map();
-
-      // Production data initialization
-      const initializeProductionData = () => {
-        // Real local hardware stores by area (UK-wide coverage)
-        localStores.set('london', [
-          { name: 'B&Q Croydon', address: 'Valley Park, Croydon CR0 4UZ', phone: '020 8649 8400', website: 'https://www.diy.com' },
-          { name: 'Wickes London', address: 'Old Kent Rd, London SE1 5LX', phone: '020 7703 0222', website: 'https://www.wickes.co.uk' },
-          { name: 'Homebase Greenwich', address: 'Bugsbys Way, London SE10 0QJ', phone: '020 8858 6200', website: 'https://www.homebase.co.uk' },
-          { name: 'Toolstation London', address: 'Unit 1, Wandsworth High St, London SW18 2PP', phone: '0330 333 3303', website: 'https://www.toolstation.com' }
-        ]);
-        
-        localStores.set('manchester', [
-          { name: 'B&Q Manchester', address: 'Eastlands, Manchester M11 4BD', phone: '0161 230 8400', website: 'https://www.diy.com' },
-          { name: 'Wickes Oldham', address: 'Henrietta St, Oldham OL4 1NL', phone: '0161 627 4455', website: 'https://www.wickes.co.uk' },
-          { name: 'Toolstation Manchester', address: 'Unit 2, Ashton Old Rd, Manchester M11 2AF', phone: '0330 333 3303', website: 'https://www.toolstation.com' },
-          { name: 'Homebase Manchester', address: 'Chester Rd, Old Trafford, Manchester M16 0RP', phone: '0161 877 8200', website: 'https://www.homebase.co.uk' }
-        ]);
-
-        localStores.set('birmingham', [
-          { name: 'B&Q Birmingham', address: 'Fort Dunlop, Fort Pkwy, Birmingham B24 9FD', phone: '0121 306 8400', website: 'https://www.diy.com' },
-          { name: 'Wickes Birmingham', address: 'Coventry Rd, Small Heath, Birmingham B10 0UG', phone: '0121 773 4455', website: 'https://www.wickes.co.uk' },
-          { name: 'Toolstation Birmingham', address: '159 Bromford Ln, Birmingham B8 2RZ', phone: '0330 333 3303', website: 'https://www.toolstation.com' }
-        ]);
-
-        // Initialize sample revenue data
-        const today = new Date();
-        for (let i = 30; i >= 0; i--) {
-          const date = new Date(today);
-          date.setDate(date.getDate() - i);
-          revenueData.push({
-            date: date.toISOString().split('T')[0],
-            daily: Math.random() * 200 + 50,
-            parts: Math.random() * 100 + 20,
-            premium: Math.random() * 150 + 30
-          });
-        }
-      };
-
-      initializeProductionData();
-
-      // ============================================================================
-      // ENHANCED SERVICE INITIALIZATION
-      // ============================================================================
-      
-      let supabase;
-      let supabaseConnected = false;
-      let emailServiceReady = false;
-      let stripe;
-      let stripeReady = false;
-
-      const initializeSupabase = async () => {
-        try {
-          supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-          const { data, error } = await supabase.from('users').select('count').limit(1);
-          if (error && error.code === '42P01') {
-            console.log('🏗️ [SUPABASE] Creating database schema...');
-          } else if (error) {
-            throw error;
-          }
-          supabaseConnected = true;
-          console.log('✅ [SUPABASE] Connected successfully');
-        } catch (error) {
-          console.error('❌ [SUPABASE] Connection failed:', error);
-          supabaseConnected = false;
-        }
-      };
-
-      const initializeEmailService = () => {
-        try {
-          emailjs.init(EMAILJS_PUBLIC_KEY);
-          emailServiceReady = true;
-          console.log('✅ [EMAIL] EmailJS service ready for bi-directional communication!');
-        } catch (error) {
-          console.error('❌ [EMAIL] EmailJS initialization failed:', error);
-          emailServiceReady = false;
-        }
-      };
-
-      const initializeStripe = () => {
-        try {
-          stripe = Stripe(STRIPE_CONFIG.publishableKey);
-          stripeReady = true;
-          console.log('✅ [STRIPE] LIVE payment system ready');
-        } catch (error) {
-          console.error('❌ [STRIPE] Stripe initialization failed:', error);
-          stripeReady = false;
-        }
-      };
-
-      // Enhanced email system with reply functionality
-      const sendRealEmail = async (recipientEmail, subject, message, senderName = 'DIYMatch Team', replyTo = null) => {
-        if (!emailServiceReady) {
-          console.warn('Email service not configured');
-          return false;
-        }
-        
-        try {
-          const templateParams = {
-            to_email: recipientEmail,
-            from_name: senderName,
-            subject: subject,
-            message: message,
-            reply_to: replyTo || APP_CONFIG.supportEmail
-          };
-          
-          const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-          
-          // Log email activity
-          userActivity.push({
-            type: 'email_sent',
-            timestamp: new Date().toISOString(),
-            details: { to: recipientEmail, subject },
-            source: 'system'
-          });
-          
-          return response.status === 200;
-        } catch (error) {
-          console.error('Email send failed:', error);
-          return false;
-        }
-      };
-
-      // Enhanced payment processing with revenue tracking
-      const processPayment = async (amount, bookingData, paymentType = 'booking') => {
-        if (!stripeReady) {
-          console.warn('💳 [PAYMENT DEMO] Processing payment simulation...');
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // Track demo revenue
-          const today = new Date().toISOString().split('T')[0];
-          const existingRevenue = revenueData.find(r => r.date === today);
-          if (existingRevenue) {
-            existingRevenue[paymentType === 'parts' ? 'parts' : paymentType === 'premium' ? 'premium' : 'daily'] += parseFloat(amount);
-          }
-          
-          return {
-            success: true,
-            paymentIntent: { id: `pi_demo_${Date.now()}` },
-            receiptUrl: `https://demo-receipt-${Date.now()}.com`,
-            demo: true
-          };
-        }
-
-        try {
-          // Real Stripe integration would go here
-          const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(parseFloat(amount) * 100),
-            currency: 'gbp',
-            metadata: {
-              type: paymentType,
-              customer_email: bookingData.customerEmail || bookingData.email,
-              customer_name: bookingData.customerName || bookingData.name,
-              service_type: bookingData.service_type || 'expert_booking',
-              platform: 'diymatch'
-            }
-          });
-
-          return {
-            success: true,
-            paymentIntent: paymentIntent,
-            receiptUrl: `https://dashboard.stripe.com/payments/${paymentIntent.id}`
-          };
-        } catch (error) {
-          console.error('Payment failed:', error);
-          return { success: false, error: error.message };
-        }
-      };
-
-      // Enhanced AI analysis with expert recommendations
-      const simulateAIAnalysis = async (imageData, description, progressCallback, userLocation = 'london') => {
-        const steps = [
-          { progress: 5, message: 'Processing image...' },
-          { progress: 15, message: 'Analyzing visual patterns...' },
-          { progress: 30, message: 'Identifying components...' },
-          { progress: 45, message: 'Cross-referencing database...' },
-          { progress: 60, message: 'Matching with expert specialties...' },
-          { progress: 75, message: 'Calculating recommendations...' },
-          { progress: 90, message: 'Finalizing analysis...' },
-          { progress: 100, message: 'Analysis complete!' }
-        ];
-        
-        for (const step of steps) {
-          await new Promise(resolve => setTimeout(resolve, 400));
-          progressCallback(step.progress);
-        }
-        
-        const keywords = description.toLowerCase();
-        
-        let problemType = 'General Maintenance Issue';
-        let severity = 'Medium';
-        let confidence = 'Medium';
-        let isDIYFriendly = true;
-        let estimatedCost = '£50-£150';
-        let expertSpecialty = 'General Handyman';
-        let toolsNeeded = ['Basic hand tools', 'Safety equipment'];
-        let materialsNeeded = ['General hardware'];
-        let safetyWarnings = ['Wear safety glasses', 'Use proper tools'];
-        let stepByStepGuide = ['Assess the problem', 'Gather tools', 'Proceed carefully'];
-        
-        if (keywords.includes('electric') || keywords.includes('socket') || keywords.includes('wire')) {
-          problemType = 'Electrical Issue';
-          severity = 'High';
-          confidence = 'High';
-          isDIYFriendly = false;
-          estimatedCost = '£80-£250';
-          expertSpecialty = 'Electrician';
-          toolsNeeded = ['Multimeter', 'Insulated screwdrivers', 'Wire strippers'];
-          materialsNeeded = ['Electrical wire', 'Junction boxes', 'Cable clips'];
-          safetyWarnings = ['⚠️ DANGER: Turn off power at mains', 'Never work on live circuits', 'Use qualified electrician'];
-          stepByStepGuide = ['STOP: This requires a qualified electrician', 'Turn off power', 'Call certified professional'];
-        } else if (keywords.includes('water') || keywords.includes('leak') || keywords.includes('pipe')) {
-          problemType = 'Plumbing Issue';
-          severity = 'Medium';
-          confidence = 'High';
-          isDIYFriendly = true;
-          estimatedCost = '£25-£80';
-          expertSpecialty = 'Plumber';
-          toolsNeeded = ['Pipe wrench', 'Adjustable spanner', 'Pipe cutter'];
-          materialsNeeded = ['Pipe fittings', 'PTFE tape', 'Pipe cement'];
-          safetyWarnings = ['Turn off water supply', 'Have towels ready', 'Check for hidden pipes'];
-          stepByStepGuide = ['Turn off water', 'Drain system', 'Locate leak source', 'Apply appropriate fix'];
-        } else if (keywords.includes('wall') || keywords.includes('paint') || keywords.includes('decor')) {
-          problemType = 'Painting/Decoration Issue';
-          severity = 'Low';
-          confidence = 'High';
-          isDIYFriendly = true;
-          estimatedCost = '£20-£60';
-          expertSpecialty = 'Painter & Decorator';
-          toolsNeeded = ['Brushes', 'Rollers', 'Sandpaper', 'Masking tape'];
-          materialsNeeded = ['Paint', 'Primer', 'Filler', 'Drop cloths'];
-          safetyWarnings = ['Ventilate area well', 'Wear old clothes', 'Protect furniture'];
-          stepByStepGuide = ['Prepare surface', 'Apply primer if needed', 'Paint in thin coats', 'Allow proper drying time'];
-        }
-        
-        return {
-          problemDetected: problemType,
-          confidence: confidence,
-          severity: severity,
-          description: `Based on AI analysis, this appears to be a ${problemType.toLowerCase()}.`,
-          isDIYFriendly: isDIYFriendly,
-          estimatedCost: estimatedCost,
-          confidenceScore: confidence === 'High' ? 95 : 75,
-          recommendedExpertType: expertSpecialty,
-          toolsNeeded: toolsNeeded,
-          materialsNeeded: materialsNeeded,
-          safetyWarnings: safetyWarnings,
-          stepByStepGuide: stepByStepGuide,
-          localStores: localStores.get(userLocation.toLowerCase()) || localStores.get('london'),
-          nextSteps: [
-            'Gather the recommended tools and materials',
-            'Follow safety guidelines carefully',
-            'Contact an expert if unsure'
-          ]
-        };
-      };
-
-      // Enhanced database operations
-      const dbOperations = {
-        async createUser(userData) {
-          const user = {
-            id: `user_${Date.now()}`,
-            ...userData,
-            created_at: new Date().toISOString(),
-            location: 'London',
-            preferences: { theme: 'light', notifications: true }
-          };
-          registeredUsers.set(userData.email.toLowerCase(), user);
-          
-          userActivity.push({
-            type: 'user_registered',
-            timestamp: new Date().toISOString(),
-            details: { email: userData.email, type: userData.user_type },
-            source: 'registration'
-          });
-          
-          return { success: true, user };
-        },
-        
-        async getUserByEmail(email) {
-          return registeredUsers.get(email.toLowerCase());
-        },
-        
-        async updateUser(email, updates) {
-          const user = registeredUsers.get(email.toLowerCase());
-          if (user) {
-            Object.assign(user, updates);
-            registeredUsers.set(email.toLowerCase(), user);
-            return { success: true, user };
-          }
-          return { success: false, error: 'User not found' };
-        },
-        
-        async saveMessage(messageData) {
-          const messageId = Date.now();
-          const message = { id: messageId, ...messageData, timestamp: new Date().toISOString() };
-          
-          if (messageData.message_type === 'contact_form') {
-            adminMessages.unshift(message);
-            
-            await sendRealEmail(
-              APP_CONFIG.adminEmail,
-              `📧 New Contact Form: ${messageData.subject}`,
-              `New message received:
-
-From: ${messageData.sender_name} (${messageData.sender_email})
-Subject: ${messageData.subject}
-
-Message:
-${messageData.content}
-
-Reply directly to this email to respond to the sender.`,
-              'DIYMatch Contact System',
-              messageData.sender_email
-            );
-          }
-          
-          userActivity.push({
-            type: 'message_received',
-            timestamp: new Date().toISOString(),
-            details: { type: messageData.message_type, from: messageData.sender_email },
-            source: 'contact'
-          });
-          
-          return { success: true, id: messageId };
-        },
-
-        async saveExpertApplication(applicationData) {
-          const applicationId = Date.now();
-          const application = {
-            id: applicationId,
-            ...applicationData,
-            status: 'pending',
-            submitted_at: new Date().toISOString()
-          };
-          
-          expertApplications.set(applicationId, application);
-          
-          await sendRealEmail(
-            APP_CONFIG.adminEmail,
-            '👨‍🔧 New Expert Application Received',
-            `New expert application:
-
-Name: ${applicationData.name}
-Email: ${applicationData.email}
-Profession: ${applicationData.profession}
-Experience: ${applicationData.experience}
-Location: ${applicationData.postcode}
-
-CV: ${applicationData.cvData ? 'Uploaded' : 'Not provided'}
-
-Please review in admin dashboard.`
-          );
-          
-          return { success: true, id: applicationId };
-        },
-
-        async saveOrder(orderData) {
-          const orderId = Date.now();
-          const order = {
-            id: orderId,
-            ...orderData,
-            timestamp: new Date().toISOString(),
-            status: 'confirmed'
-          };
-          
-          if (!userOrders.has(orderData.customerEmail)) {
-            userOrders.set(orderData.customerEmail, []);
-          }
-          userOrders.get(orderData.customerEmail).push(order);
-          
-          return { success: true, id: orderId };
-        },
-
-        async getUserOrders(userEmail) {
-          return userOrders.get(userEmail) || [];
-        }
-      };
-
-      const triggerHaptic = async (type = 'light') => {
-        try {
-          if (navigator.vibrate) {
-            const durations = { light: 50, medium: 100, heavy: 200, success: [50, 100, 50], error: [100, 50, 100] };
-            navigator.vibrate(durations[type] || 100);
-          }
-        } catch (error) {
-          console.warn('Haptic feedback failed:', error);
-        }
-      };
-
-      const takePhoto = async () => {
-        return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = 'image/*';
-          input.capture = 'environment';
-          input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (event) => resolve(event.target.result);
-              reader.readAsDataURL(file);
-            }
-          };
-          input.click();
-        });
-      };
-
-      const uploadCV = async () => {
-        return new Promise((resolve) => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.accept = '.pdf,.doc,.docx';
-          input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (event) => resolve({
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                data: event.target.result
-              });
-              reader.readAsDataURL(file);
-            }
-          };
-          input.click();
-        });
-      };
-
-      const initializeAppServices = async () => {
-        await initializeSupabase();
-        initializeEmailService();
-        initializeStripe();
-        
-        setTimeout(() => {
-          const splash = document.getElementById('splash-screen');
-          if (splash) splash.remove();
-        }, 1000);
-      };
-
-      // ============================================================================
-      // CONTEXTS
-      // ============================================================================
-      
-      const AuthContext = createContext();
-      const DarkModeContext = createContext();
-
-      const useAuth = () => useContext(AuthContext);
-      const useDarkMode = () => useContext(DarkModeContext);
-
-      // ============================================================================
-      // ENHANCED COMPONENTS
-      // ============================================================================
-
-      const WelcomePage = ({ navigateToPage }) => {
-        const { isDarkMode, toggleDarkMode } = useDarkMode();
-        const { user } = useAuth();
-
-        return h('div', { 
-          className: `min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} safe-area-top` 
-        },
-          // Header with logo and dark mode toggle
-          h('div', { className: 'sticky top-0 z-40 bg-opacity-90 backdrop-filter backdrop-blur-lg' },
-            h('div', { className: 'flex items-center justify-between p-4' },
-              h('div', { className: 'flex items-center space-x-2' },
-                h('div', { className: 'text-3xl' }, '🔧'),
-                h('h1', { className: 'text-xl font-bold' }, 'DIYMatch')
-              ),
-              h('button', {
-                onClick: () => { triggerHaptic('light'); toggleDarkMode(); },
-                className: `p-2 rounded-lg mobile-touch ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white/80 hover:bg-white'} transition-all shadow-sm`
-              }, isDarkMode ? '☀️' : '🌙')
-            )
-          ),
-          
-          // Hero Section
-          h('div', { className: 'text-center py-16 px-4' },
-            h('div', { className: 'max-w-4xl mx-auto' },
-              h('h1', { className: 'text-4xl md:text-6xl font-bold mb-6' },
-                'Welcome to ',
-                h('span', { className: 'text-blue-600' }, 'DIYMatch')
-              ),
-              h('p', { className: `text-xl md:text-2xl mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}` },
-                'Connecting DIY Enthusiasts with Expert Professionals'
-              ),
-              h('p', { className: `text-lg mb-12 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} max-w-3xl mx-auto` },
-                'Whether you\'re stuck on a home repair, need expert guidance, or want instant AI-powered solutions to your DIY problems, DIYMatch bridges the gap between those who need help and skilled professionals ready to assist.'
-              )
-            )
-          ),
-          
-          // Main Action Buttons Section
-          h('div', { className: 'px-4 py-8' },
-            h('div', { className: 'max-w-4xl mx-auto' },
-              h('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-4 mb-12' },
-                // Get FREE AI Analysis Button
-                h('button', {
-                  onClick: () => {
-                    triggerHaptic('medium');
-                    if (user) { navigateToPage('analyze'); } else { navigateToPage('signup'); }
-                  },
-                  className: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 px-6 rounded-xl text-lg font-semibold mobile-touch shadow-lg flex items-center justify-center space-x-2 hover:shadow-xl transition-all'
-                },
-                  h('span', null, '🚀'),
-                  h('span', null, user ? 'Start AI Analysis' : '🔬 Get FREE AI Analysis')
-                ),
-                
-                // Help Others as an Expert Button
-                h('button', {
-                  onClick: () => {
-                    triggerHaptic('medium');
-                    navigateToPage('expert-application');
-                  },
-                  className: 'bg-gradient-to-r from-green-600 to-blue-600 text-white py-6 px-6 rounded-xl text-lg font-semibold mobile-touch shadow-lg flex items-center justify-center space-x-2 hover:shadow-xl transition-all'
-                },
-                  h('span', null, '👨‍🔧'),
-                  h('span', null, 'Help Others as an Expert')
-                ),
-                
-                // Sign In Button or Dashboard
-                !user ? h('button', {
-                  onClick: () => { triggerHaptic('medium'); navigateToPage('login'); },
-                  className: `border-2 ${isDarkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : 'border-gray-300 text-gray-700 hover:border-gray-400'} py-6 px-6 rounded-xl text-lg font-semibold mobile-touch transition-all flex items-center justify-center space-x-2 hover:shadow-lg`
-                },
-                  h('span', null, '🔑'),
-                  h('span', null, 'Sign In')
-                ) : h('button', {
-                  onClick: () => { triggerHaptic('medium'); navigateToPage('dashboard'); },
-                  className: `border-2 ${isDarkMode ? 'border-gray-600 text-gray-300 hover:border-gray-500' : 'border-gray-300 text-gray-700 hover:border-gray-400'} py-6 px-6 rounded-xl text-lg font-semibold mobile-touch transition-all flex items-center justify-center space-x-2 hover:shadow-lg`
-                },
-                  h('span', null, '🏠'),
-                  h('span', null, 'My Dashboard')
-                )
-              )
-            )
-          ),
-          
-          // Enhanced How DIYMatch Works Section
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} py-16` },
-            h('div', { className: 'max-w-6xl mx-auto px-4' },
-              h('h2', { className: 'text-3xl font-bold text-center mb-12' }, 'How DIYMatch Works'),
-              
-              h('div', { className: 'grid grid-cols-1 md:grid-cols-4 gap-8' },
-                // FREE AI Analysis
-                h('div', { className: 'text-center' },
-                  h('div', { className: 'w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center' },
-                    h('span', { className: 'text-2xl' }, '🤖')
-                  ),
-                  h('h3', { className: 'text-xl font-bold mb-4' }, 'FREE AI Analysis'),
-                  h('p', { className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` }, 
-                    'Upload a photo and get completely free problem identification, then upgrade for video solutions.'
-                  )
-                ),
-                
-                // Expert Network
-                h('div', { className: 'text-center' },
-                  h('div', { className: 'w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center' },
-                    h('span', { className: 'text-2xl' }, '🎯')
-                  ),
-                  h('h3', { className: 'text-xl font-bold mb-4' }, 'Expert Connection'),
-                  h('p', { className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` }, 
-                    'When DIY isn\'t enough, instantly connect with verified local professionals who can help.'
-                  )
-                ),
-                
-                // Local Parts
-                h('div', { className: 'text-center' },
-                  h('div', { className: 'w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center' },
-                    h('span', { className: 'text-2xl' }, '🛡️')
-                  ),
-                  h('h3', { className: 'text-xl font-bold mb-4' }, 'Safety First'),
-                  h('p', { className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` }, 
-                    'Our AI knows when a job requires professional help and will recommend expert assistance for safety.'
-                  )
-                )
-              )
-            )
-          ),
-          
-          // Get in Touch Section
-          h('div', { className: 'py-16 px-4' },
-            h('div', { className: 'max-w-2xl mx-auto' },
-              h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-lg text-center` },
-                h('div', { className: 'flex items-center justify-center mb-4' },
-                  h('span', { className: 'text-3xl mr-3' }, '📞'),
-                  h('h3', { className: 'text-2xl font-bold' }, 'Get in Touch')
-                ),
-                h('p', { className: `${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-6` }, 
-                  'Have questions about DIYMatch? Need support? We\'re here to help!'
-                ),
-                h('button', {
-                  onClick: () => { triggerHaptic('medium'); navigateToPage('contact'); },
-                  className: 'bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-lg font-semibold mobile-touch transition-all'
-                }, '💬 Contact Us')
-              )
-            )
-          ),
-          
-          // Footer
-          h('footer', { className: `text-center py-8 px-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} safe-area-bottom` },
-            // Legal Disclaimer
-            h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-4 mb-6 text-left` },
-              h('h4', { className: 'font-bold mb-2 text-sm' }, '⚠️ Important Legal Notice'),
-              h('p', { className: 'text-xs leading-relaxed' }, 
-                'DIYMatch is an information and referral platform only. We do not employ experts or guarantee work quality. ' +
-                'All AI analysis is for general guidance only - NOT professional advice. DIY work carries risks of injury, ' +
-                'property damage, or death. Always consult certified professionals for electrical, gas, plumbing, or structural work. ' +
-                'Users assume full responsibility for their safety and actions. DIYMatch accepts no liability for consequences ' +
-                'of using our service or following any recommendations.'
-              )
-            ),
-            h('p', { className: `text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` }, 
-              '© 2024 DIYMatch - Connecting Problems with Solutions'
-            ),
-            h('div', { className: 'mt-3 text-xs text-gray-500' }, `Version ${APP_CONFIG.version} - Production Ready`)
-          )
-        );
-      };
-
-      // Bottom Navigation
-      const BottomNav = ({ currentPage, navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user } = useAuth();
-
-        const navItems = [
-          { id: 'home', icon: '🏠', label: 'Home', page: 'home' },
-          { id: 'analyze', icon: '🤖', label: 'Analyze', page: 'analyze' },
-          { id: 'experts', icon: '👨‍🔧', label: 'Experts', page: 'experts' },
-          { id: 'parts', icon: '🛒', label: 'Parts', page: 'parts' },
-          { id: 'account', icon: '👤', label: 'Account', action: () => {
-            if (user) {
-              navigateToPage('account-settings');
-            } else {
-              navigateToPage('login');
-            }
-          }}
-        ];
-
-        return h('div', { className: `fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t safe-area-bottom` },
-          h('div', { className: 'flex justify-around items-center py-2' },
-            ...navItems.map((item) =>
-              h('button', {
-                key: item.id,
-                onClick: () => {
-                  triggerHaptic('light');
-                  if (item.action) {
-                    item.action();
-                  } else if (user || item.page === 'home') {
-                    navigateToPage(item.page);
-                  } else {
-                    navigateToPage('signup');
-                  }
-                },
-                className: `flex flex-col items-center p-2 rounded-lg mobile-touch transition-all ${
-                  currentPage === item.page || (item.id === 'account' && currentPage === 'account-settings')
-                    ? isDarkMode ? 'text-blue-400 bg-gray-700' : 'text-blue-600 bg-blue-50'
-                    : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'
-                }`
-              },
-                h('span', { className: 'text-xl mb-1' }, item.icon),
-                h('span', { className: 'text-xs font-medium' }, item.label)
-              )
-            )
-          )
-        );
-      };
-
-      // Login Page
-      const LoginPage = ({ navigateToPage }) => {
-        const { login } = useAuth();
-        const { isDarkMode } = useDarkMode();
-        const [email, setEmail] = useState('');
-        const [password, setPassword] = useState('');
-        const [loading, setLoading] = useState(false);
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          setLoading(true);
-          await triggerHaptic('medium');
-          
-          const success = await login(email, password);
-          if (!success) {
-            await triggerHaptic('error');
-            alert('❌ Login failed. Please check your credentials or try signing up.');
-          }
-          setLoading(false);
-        };
-
-        return h('div', { className: `min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-purple-50'} p-4 safe-area-top safe-area-bottom` },
-          h('div', { className: `${cardClasses} p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md` },
-            h('div', { className: 'flex items-center space-x-2 mb-6' },
-              h('div', { className: 'text-3xl' }, '🔧'),
-              h('h1', { className: 'text-2xl font-bold' }, 'Sign In to DIYMatch')
-            ),
-            
-            h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-              h('div', null,
-                h('label', { className: 'block text-sm font-medium mb-2' }, 'Email Address'),
-                h('input', {
-                  type: 'email',
-                  value: email,
-                  onChange: (e) => setEmail(e.target.value),
-                  required: true,
-                  className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'Enter your email address'
-                })
-              ),
-              
-              h('div', null,
-                h('label', { className: 'block text-sm font-medium mb-2' }, 'Password'),
-                h('input', {
-                  type: 'password',
-                  value: password,
-                  onChange: (e) => setPassword(e.target.value),
-                  required: true,
-                  className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'Enter your password'
-                })
-              ),
-              
-              h('button', {
-                type: 'submit',
-                disabled: loading,
-                className: 'w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-semibold transition-all text-lg mobile-touch'
-              }, loading ? 'Signing In...' : '🔑 Sign In')
-            ),
-            
-            h('div', { className: 'mt-6 text-center space-y-3' },
-              h('p', { className: `text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` }, "Don't have an account?"),
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('signup'); },
-                className: 'w-full text-blue-600 hover:text-blue-700 font-medium mobile-touch py-2'
-              }, 'Create Free Account'),
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: `text-sm ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'} mobile-touch py-2`
-              }, '🏠 Back to Home')
-            ),
-            
-            // Admin Login Hint
-            h('div', { className: 'mt-6 p-3 bg-blue-50 rounded-lg text-center' },
-              h('p', { className: 'text-xs text-blue-600' }, 'Admin Access: Use admin credentials to access dashboard')
-            )
-          )
-        );
-      };
-
-      // Simple Contact Page for testing
-      const ContactPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user } = useAuth();
-        const [formData, setFormData] = useState({
-          name: user?.name || '',
-          email: user?.email || '',
-          subject: '',
-          message: '',
-          urgency: 'normal'
-        });
-        const [loading, setLoading] = useState(false);
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          setLoading(true);
-          await triggerHaptic('medium');
-
-          try {
-            await dbOperations.saveMessage({
-              sender_name: formData.name,
-              sender_email: formData.email,
-              subject: formData.subject,
-              content: formData.message,
-              message_type: 'contact_form',
-              status: 'unread',
-              platform: 'web',
-              urgency: formData.urgency
-            });
-
-            await triggerHaptic('success');
-            alert('✅ Message sent successfully! We\'ll get back to you soon.');
-            
-            setFormData({
-              name: user?.name || '',
-              email: user?.email || '',
-              subject: '',
-              message: '',
-              urgency: 'normal'
-            });
-            
-          } catch (error) {
-            await triggerHaptic('error');
-            alert('❌ Failed to send message. Please try again.');
-          }
-          
-          setLoading(false);
-        };
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('div', null,
-                h('h1', { className: 'text-xl font-bold' }, '💬 Contact Support'),
-                h('p', { className: 'text-sm text-gray-500' }, 'Get help with your DIY projects')
-              )
-            )
-          ),
-
-          h('div', { className: 'p-4' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, '📝 Send us a Message'),
-              h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-                h('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-4' },
-                  h('input', {
-                    type: 'text',
-                    required: true,
-                    value: formData.name,
-                    onChange: (e) => setFormData(prev => ({ ...prev, name: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'Your Name'
-                  }),
-                  h('input', {
-                    type: 'email',
-                    required: true,
-                    value: formData.email,
-                    onChange: (e) => setFormData(prev => ({ ...prev, email: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'your@email.com'
-                  })
-                ),
-
-                h('input', {
-                  type: 'text',
-                  required: true,
-                  value: formData.subject,
-                  onChange: (e) => setFormData(prev => ({ ...prev, subject: e.target.value })),
-                  className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'Subject'
-                }),
-
-                h('textarea', {
-                  required: true,
-                  value: formData.message,
-                  onChange: (e) => setFormData(prev => ({ ...prev, message: e.target.value })),
-                  rows: 6,
-                  className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'Describe your question or issue in detail...'
-                }),
-
-                h('button', {
-                  type: 'submit',
-                  disabled: loading,
-                  className: 'w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl text-lg font-semibold mobile-touch shadow-lg disabled:opacity-50'
-                }, loading ? 'Sending Message...' : '📧 Send Message')
-              )
-            )
-          )
-        );
-      };
-
-      // Simplified additional pages for testing
-      const AnalyzePage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user } = useAuth();
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        if (!user) {
-          return h('div', { className: `min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4` },
-            h('div', { className: `${cardClasses} p-8 rounded-xl shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '🔒'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'Sign In Required'),
-              h('p', { className: 'mb-6 text-gray-600' }, 'Please sign in to use AI analysis features.'),
-              h('button', {
-                onClick: () => navigateToPage('login'),
-                className: 'bg-blue-600 text-white py-3 px-4 rounded-lg mobile-touch'
-              }, '🔑 Sign In')
-            )
-          );
-        }
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('h1', { className: 'text-xl font-bold' }, '🤖 AI Analysis')
-            )
-          ),
-          h('div', { className: 'p-4' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '🤖'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'AI Analysis Feature'),
-              h('p', { className: 'text-gray-600 mb-6' }, 'Enhanced AI analysis with expert recommendations coming soon!'),
-              h('button', {
-                onClick: () => alert('AI Analysis feature will be fully implemented with photo upload, detailed analysis, and expert connections!'),
-                className: 'bg-blue-600 text-white py-3 px-6 rounded-lg mobile-touch'
-              }, '🚀 Coming Soon')
-            )
-          )
-        );
-      };
-
-      const ExpertsPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user } = useAuth();
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        if (!user) {
-          return h('div', { className: `min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4` },
-            h('div', { className: `${cardClasses} p-8 rounded-xl shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '🔒'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'Sign In Required'),
-              h('p', { className: 'mb-6 text-gray-600' }, 'Please sign in to search for experts.'),
-              h('button', {
-                onClick: () => navigateToPage('login'),
-                className: 'bg-blue-600 text-white py-3 px-4 rounded-lg mobile-touch'
-              }, '🔑 Sign In')
-            )
-          );
-        }
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('h1', { className: 'text-xl font-bold' }, '👨‍🔧 Find Experts')
-            )
-          ),
-          h('div', { className: 'p-4' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '👨‍🔧'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'Expert Search'),
-              h('p', { className: 'text-gray-600 mb-6' }, 'Find local professionals with AI-powered matching!'),
-              h('button', {
-                onClick: () => alert('Expert search with CV verification and specialty matching coming soon!'),
-                className: 'bg-green-600 text-white py-3 px-6 rounded-lg mobile-touch'
-              }, '🚀 Coming Soon')
-            )
-          )
-        );
-      };
-
-      const PartsPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('h1', { className: 'text-xl font-bold' }, '🛒 Parts Shop')
-            )
-          ),
-          h('div', { className: 'p-4' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '🛒'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'Local Parts Shop'),
-              h('p', { className: 'text-gray-600 mb-6' }, 'Buy materials from local hardware stores!'),
-              h('button', {
-                onClick: () => alert('Local parts shop with store integration and ordering coming soon!'),
-                className: 'bg-purple-600 text-white py-3 px-6 rounded-lg mobile-touch'
-              }, '🚀 Coming Soon')
-            )
-          )
-        );
-      };
-
-      const AccountSettingsPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user, logout } = useAuth();
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        if (!user) {
-          return h('div', { className: `min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4` },
-            h('div', { className: `${cardClasses} p-8 rounded-xl shadow-lg text-center` },
-              h('div', { className: 'text-6xl mb-4' }, '🔒'),
-              h('h2', { className: 'text-2xl font-bold mb-4' }, 'Sign In Required'),
-              h('button', {
-                onClick: () => navigateToPage('login'),
-                className: 'bg-blue-600 text-white py-3 px-4 rounded-lg mobile-touch'
-              }, '🔑 Sign In')
-            )
-          );
-        }
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('h1', { className: 'text-xl font-bold' }, '⚙️ Account Settings')
-            )
-          ),
-          h('div', { className: 'p-4 space-y-4' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, '👤 Profile'),
-              h('p', null, `Name: ${user.name}`),
-              h('p', null, `Email: ${user.email}`),
-              h('p', null, `Type: ${user.user_type}`)
-            ),
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, 'ℹ️ App Information'),
-              h('p', null, `Version: ${APP_CONFIG.version}`),
-              h('p', null, `Member Since: ${new Date(user.created_at).toLocaleDateString()}`)
-            ),
-            h('button', {
-              onClick: async () => {
-                const confirmed = confirm('Are you sure you want to sign out?');
-                if (confirmed) {
-                  await logout();
-                  navigateToPage('home');
-                }
-              },
-              className: 'w-full bg-red-600 text-white py-3 px-4 rounded-lg mobile-touch'
-            }, '🚪 Sign Out')
-          )
-        );
-      };
-
-      // Admin Dashboard
-      const DashboardPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const { user } = useAuth();
-        const [activeTab, setActiveTab] = useState('overview');
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        if (user?.user_type !== 'admin') {
-          // Regular user dashboard
-          return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-            h('div', { className: 'p-4' },
-              h('h1', { className: 'text-3xl font-bold mb-6' }, `Welcome, ${user?.name}! 👋`),
-              h('div', { className: 'space-y-4' },
-                h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg text-center` },
-                  h('div', { className: 'text-6xl mb-4' }, '🚀'),
-                  h('h2', { className: 'text-2xl font-bold mb-4' }, 'Ready to Start?'),
-                  h('p', { className: 'text-gray-600 mb-6' }, 'All features are being implemented. Navigate using the bottom menu!')
-                )
-              )
-            )
-          );
-        }
-
-        // Admin Dashboard
-        const totalRevenue = revenueData.reduce((sum, day) => sum + (day.daily || 0) + (day.parts || 0) + (day.premium || 0), 0);
-        const totalUsers = registeredUsers.size;
-        const totalExperts = Array.from(expertApplications.values()).filter(app => app.status === 'approved').length;
-
-        const replyToMessage = async (message) => {
-          const reply = prompt(`Reply to ${message.sender_name}:\n\nOriginal: "${message.content}"\n\nYour reply:`);
-          if (reply) {
-            await sendRealEmail(
-              message.sender_email,
-              `Re: ${message.subject}`,
-              `Dear ${message.sender_name},\n\nThank you for contacting DIYMatch.\n\n${reply}\n\nBest regards,\nThe DIYMatch Team`,
-              'DIYMatch Support Team',
-              APP_CONFIG.supportEmail
-            );
-            alert('✅ Reply sent successfully!');
-          }
-        };
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('h1', { className: 'text-2xl font-bold' }, '👑 Admin Dashboard')
-          ),
-
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}` },
-            h('div', { className: 'flex overflow-x-auto' },
-              ['overview', 'users', 'experts', 'inbox'].map((tab) =>
-                h('button', {
-                  key: tab,
-                  onClick: () => { setActiveTab(tab); triggerHaptic('light'); },
-                  className: `px-6 py-3 font-medium mobile-touch transition-all ${
-                    activeTab === tab
-                      ? 'border-b-2 border-blue-600 text-blue-600'
-                      : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'
-                  }`
-                }, tab.charAt(0).toUpperCase() + tab.slice(1))
-              )
-            )
-          ),
-
-          h('div', { className: 'p-4' },
-            activeTab === 'overview' && h('div', { className: 'space-y-6' },
-              h('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-4' },
-                h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-                  h('div', { className: 'text-3xl mb-2' }, '💰'),
-                  h('h3', { className: 'text-2xl font-bold text-green-600' }, `£${totalRevenue.toFixed(2)}`),
-                  h('p', { className: 'text-sm text-gray-600' }, 'Total Revenue')
-                ),
-                h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-                  h('div', { className: 'text-3xl mb-2' }, '👥'),
-                  h('h3', { className: 'text-2xl font-bold text-blue-600' }, totalUsers.toString()),
-                  h('p', { className: 'text-sm text-gray-600' }, 'Total Users')
-                ),
-                h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-                  h('div', { className: 'text-3xl mb-2' }, '📧'),
-                  h('h3', { className: 'text-2xl font-bold text-orange-600' }, adminMessages.length.toString()),
-                  h('p', { className: 'text-sm text-gray-600' }, 'Messages')
-                )
-              )
-            ),
-
-            activeTab === 'users' && h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, '👥 User Management'),
-              h('div', { className: 'space-y-4' },
-                Array.from(registeredUsers.values()).length === 0 ?
-                  h('p', { className: 'text-gray-500 text-center py-8' }, 'No users registered yet') :
-                  Array.from(registeredUsers.values()).map((user) =>
-                    h('div', { key: user.id, className: 'flex items-center justify-between p-4 border rounded-lg' },
-                      h('div', null,
-                        h('h4', { className: 'font-bold' }, user.name),
-                        h('p', { className: 'text-sm text-gray-600' }, user.email),
-                        h('span', { className: `px-2 py-1 rounded-full text-xs ${
-                          user.user_type === 'admin' ? 'bg-red-100 text-red-800' :
-                          user.user_type === 'expert' ? 'bg-blue-100 text-blue-800' :
-                          'bg-green-100 text-green-800'
-                        }` }, user.user_type)
-                      ),
-                      h('div', { className: 'text-xs text-gray-500' },
-                        new Date(user.created_at).toLocaleDateString()
-                      )
-                    )
-                  )
-              )
-            ),
-
-            activeTab === 'experts' && h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, '🔧 Expert Applications'),
-              h('div', { className: 'space-y-4' },
-                Array.from(expertApplications.values()).length === 0 ?
-                  h('p', { className: 'text-gray-500 text-center py-8' }, 'No expert applications yet') :
-                  Array.from(expertApplications.values()).map((application) =>
-                    h('div', { key: application.id, className: 'border rounded-lg p-4' },
-                      h('div', { className: 'flex items-start justify-between mb-3' },
-                        h('div', null,
-                          h('h4', { className: 'font-bold' }, application.name),
-                          h('p', { className: 'text-sm text-gray-600' }, `${application.profession} • ${application.experience}`),
-                          h('p', { className: 'text-sm text-gray-500' }, application.email)
-                        ),
-                        h('span', { className: `px-3 py-1 rounded-full text-sm ${
-                          application.status === 'approved' ? 'bg-green-100 text-green-800' :
-                          application.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }` }, application.status.toUpperCase())
-                      ),
-                      application.cvData && h('div', { className: 'mb-3' },
-                        h('span', { className: 'text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded' }, 
-                          `📄 CV: ${application.cvData.name}`
-                        )
-                      ),
-                      application.status === 'pending' && h('div', { className: 'flex space-x-2' },
-                        h('button', {
-                          onClick: async () => {
+    } catch (error) {
+      await triggerHaptic('error');
+      alert('❌ Failed to submit application.');
+    }
+    
+    setLoading(false);
+  };
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4`}>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className="p-2"
+          >
+            ←
+          </button>
+          <h1 className="text-xl font-bold">👨‍🔧 Become an Expert</h1>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-6">
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="Full Name"
+              />
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="Email"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="Phone Number"
+              />
+              <input
+                type="text"
+                value={formData.postcode}
+                onChange={(e) => setFormData(prev => ({ ...prev, postcode: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+                placeholder="Service Area Postcode"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <select
+                value={formData.profession}
+                onChange={(e) => setFormData(prev => ({ ...prev, profession: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+              >
+                <option value="">Select Profession</option>
+                <option value="Electrician">Electrician</option>
+                <option value="Plumber">Plumber</option>
+                <option value="Carpenter">Carpenter</option>
+                <option value="General Handyman">General Handyman</option>
+                <option value="Other">Other</option>
+              </select>
+              <select
+                value={formData.experience}
+                onChange={(e) => setFormData(prev => ({ ...prev, experience: e.target.value }))}
+                className={`w-full border rounded-lg px-4 py-3 text-base ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+                }`}
+              >
+                <option value="">Years of Experience</option>
+                <option value="2-3 years">2-3 years</option>
+                <option value="4-5 years">4-5 years</option>
+                <option value="6-10 years">6-10 years</option>
+                <option value="15+ years">15+ years</option>
+              </select>
+            </div>
+
+            <textarea
+              value={formData.certifications}
+              onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value }))}
+              rows={3}
+              className={`w-full border rounded-lg px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="Qualifications & Certifications..."
+            />
+
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              rows={4}
+              className={`w-full border rounded-lg px-4 py-3 text-base ${
+                isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
+              }`}
+              placeholder="About you and your services..."
+            />
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg disabled:opacity-50"
+            >
+              {loading ? 'Submitting...' : '🚀 Submit Application'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DashboardPage = ({ navigateToPage }) => {
+  const { isDarkMode } = useDarkMode();
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('overview');
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  if (user?.user_type !== 'admin') {
+    return (
+      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+        <div className="p-4">
+          <h1 className="text-3xl font-bold mb-6">Welcome, {user?.name}! 👋</h1>
+          <div className="space-y-4">
+            <div className={`${cardClasses} rounded-xl p-6 shadow-lg text-center`}>
+              <div className="text-6xl mb-4">🚀</div>
+              <h2 className="text-2xl font-bold mb-4">Ready to Start?</h2>
+              <p className="text-gray-600 mb-6">All features are being implemented. Navigate using the bottom menu!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Admin Dashboard
+  const totalUsers = registeredUsers.size;
+
+  const replyToMessage = async (message) => {
+    const reply = prompt(`Reply to ${message.sender_name}:\n\nOriginal: "${message.content}"\n\nYour reply:`);
+    if (reply) {
+      alert('✅ Reply sent successfully! (In full implementation, this would send an actual email)');
+    }
+  };
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4`}>
+        <h1 className="text-2xl font-bold">👑 Admin Dashboard</h1>
+      </div>
+
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className="flex overflow-x-auto">
+          {['overview', 'users', 'experts', 'inbox'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => { setActiveTab(tab); triggerHaptic('light'); }}
+              className={`px-6 py-3 font-medium transition-all ${
+                activeTab === tab
+                  ? 'border-b-2 border-blue-600 text-blue-600'
+                  : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'
+              }`}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-4">
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+                <div className="text-3xl mb-2">👥</div>
+                <h3 className="text-2xl font-bold text-blue-600">{totalUsers}</h3>
+                <p className="text-sm text-gray-600">Total Users</p>
+              </div>
+              <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+                <div className="text-3xl mb-2">📧</div>
+                <h3 className="text-2xl font-bold text-orange-600">{adminMessages.length}</h3>
+                <p className="text-sm text-gray-600">Messages</p>
+              </div>
+              <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+                <div className="text-3xl mb-2">🔧</div>
+                <h3 className="text-2xl font-bold text-green-600">{expertApplications.size}</h3>
+                <p className="text-sm text-gray-600">Expert Applications</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+            <h3 className="text-lg font-bold mb-4">👥 User Management</h3>
+            <div className="space-y-4">
+              {Array.from(registeredUsers.values()).length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No users registered yet</p>
+              ) : (
+                Array.from(registeredUsers.values()).map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-bold">{user.name}</h4>
+                      <p className="text-sm text-gray-600">{user.email}</p>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        user.user_type === 'admin' ? 'bg-red-100 text-red-800' :
+                        user.user_type === 'expert' ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {user.user_type}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'experts' && (
+          <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+            <h3 className="text-lg font-bold mb-4">🔧 Expert Applications</h3>
+            <div className="space-y-4">
+              {Array.from(expertApplications.values()).length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No expert applications yet</p>
+              ) : (
+                Array.from(expertApplications.values()).map((application) => (
+                  <div key={application.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-bold">{application.name}</h4>
+                        <p className="text-sm text-gray-600">{application.profession} • {application.experience}</p>
+                        <p className="text-sm text-gray-500">{application.email}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm ${
+                        application.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        application.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {application.status.toUpperCase()}
+                      </span>
+                    </div>
+                    {application.status === 'pending' && (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => {
                             expertApplications.set(application.id, { ...application, status: 'approved' });
                             alert('Expert approved!');
-                          },
-                          className: 'bg-green-600 text-white px-3 py-1 rounded text-sm mobile-touch'
-                        }, '✅ Approve'),
-                        h('button', {
-                          onClick: async () => {
+                          }}
+                          className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                        >
+                          ✅ Approve
+                        </button>
+                        <button
+                          onClick={() => {
                             expertApplications.set(application.id, { ...application, status: 'rejected' });
                             alert('Expert rejected!');
-                          },
-                          className: 'bg-red-600 text-white px-3 py-1 rounded text-sm mobile-touch'
-                        }, '❌ Reject')
-                      )
-                    )
-                  )
-              )
-            ),
+                          }}
+                          className="bg-red-600 text-white px-3 py-1 rounded text-sm"
+                        >
+                          ❌ Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
 
-            activeTab === 'inbox' && h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('h3', { className: 'text-lg font-bold mb-4' }, '📧 Message Inbox'),
-              h('div', { className: 'space-y-4' },
-                adminMessages.length === 0 ? 
-                  h('p', { className: 'text-gray-500 text-center py-8' }, 'No messages yet') :
-                  adminMessages.map((message) =>
-                    h('div', { key: message.id, className: 'border rounded-lg p-4' },
-                      h('div', { className: 'flex items-start justify-between mb-3' },
-                        h('div', null,
-                          h('h4', { className: 'font-bold' }, message.subject),
-                          h('p', { className: 'text-sm text-gray-600' }, `From: ${message.sender_name} (${message.sender_email})`),
-                          h('p', { className: 'text-xs text-gray-500' }, new Date(message.timestamp).toLocaleString())
-                        ),
-                        h('button', {
-                          onClick: () => replyToMessage(message),
-                          className: 'bg-blue-600 text-white px-3 py-1 rounded text-sm mobile-touch'
-                        }, '📧 Reply')
-                      ),
-                      h('div', { className: 'bg-gray-50 rounded p-3' },
-                        h('p', { className: 'text-sm whitespace-pre-wrap' }, message.content)
-                      )
-                    )
-                  )
-              )
-            )
-          )
-        );
-      };
+        {activeTab === 'inbox' && (
+          <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+            <h3 className="text-lg font-bold mb-4">📧 Message Inbox</h3>
+            <div className="space-y-4">
+              {adminMessages.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No messages yet</p>
+              ) : (
+                adminMessages.map((message) => (
+                  <div key={message.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-bold">{message.subject}</h4>
+                        <p className="text-sm text-gray-600">From: {message.sender_name} ({message.sender_email})</p>
+                        <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                      </div>
+                      <button
+                        onClick={() => replyToMessage(message)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                      >
+                        📧 Reply
+                      </button>
+                    </div>
+                    <div className="bg-gray-50 rounded p-3">
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-      const SignupPage = ({ navigateToPage }) => {
-        const { login } = useAuth();
-        const { isDarkMode } = useDarkMode();
-        const [email, setEmail] = useState('');
-        const [password, setPassword] = useState('');
-        const [name, setName] = useState('');
-        const [userType, setUserType] = useState('user');
-        const [loading, setLoading] = useState(false);
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+const BottomNav = ({ currentPage, navigateToPage }) => {
+  const { isDarkMode } = useDarkMode();
+  const { user } = useAuth();
 
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          
-          const agreed = confirm('By creating an account, you agree to DIYMatch terms and conditions. Continue?');
-          if (!agreed) return;
+  const navItems = [
+    { id: 'home', icon: '🏠', label: 'Home', page: 'home' },
+    { id: 'analyze', icon: '🤖', label: 'Analyze', page: 'analyze' },
+    { id: 'experts', icon: '👨‍🔧', label: 'Experts', page: 'experts' },
+    { id: 'parts', icon: '🛒', label: 'Parts', page: 'parts' },
+    { 
+      id: 'account', 
+      icon: '👤', 
+      label: 'Account', 
+      action: () => user ? navigateToPage('account-settings') : navigateToPage('login')
+    }
+  ];
 
-          setLoading(true);
-          await triggerHaptic('medium');
-          
-          if (registeredUsers.has(email.toLowerCase())) {
-            await triggerHaptic('error');
-            alert('❌ Email already registered. Please use a different email or sign in.');
-            setLoading(false);
-            return;
-          }
-          
-          const success = await login(email, password, userType, name);
-          if (!success) {
-            await triggerHaptic('error');
-            alert('❌ Registration failed. Please try again.');
-          }
-          setLoading(false);
-        };
-
-        return h('div', { className: `min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-purple-50'} p-4 safe-area-top safe-area-bottom` },
-          h('div', { className: `${cardClasses} p-8 rounded-2xl shadow-xl w-full max-w-md` },
-            h('h1', { className: 'text-2xl font-bold mb-6' }, 'Join DIYMatch'),
-            
-            h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-              h('select', {
-                value: userType,
-                onChange: (e) => setUserType(e.target.value),
-                className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`
-              },
-                h('option', { value: 'user' }, 'DIY Enthusiast'),
-                h('option', { value: 'expert' }, 'Expert/Professional')
-              ),
-
-              h('input', {
-                type: 'text',
-                value: name,
-                onChange: (e) => setName(e.target.value),
-                required: true,
-                className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                placeholder: 'Full Name'
-              }),
-              
-              h('input', {
-                type: 'email',
-                value: email,
-                onChange: (e) => setEmail(e.target.value),
-                required: true,
-                className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                placeholder: 'Email Address'
-              }),
-              
-              h('input', {
-                type: 'password',
-                value: password,
-                onChange: (e) => setPassword(e.target.value),
-                required: true,
-                className: `w-full border rounded-xl px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                placeholder: 'Password'
-              }),
-              
-              h('button', {
-                type: 'submit',
-                disabled: loading,
-                className: 'w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl disabled:opacity-50 font-semibold transition-all text-lg mobile-touch'
-              }, loading ? 'Creating Account...' : '🚀 Create Account')
-            ),
-            
-            h('div', { className: 'mt-6 text-center space-y-3' },
-              h('p', { className: `text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}` },
-                'Already have an account? ',
-                h('button', {
-                  onClick: () => { triggerHaptic('light'); navigateToPage('login'); },
-                  className: 'text-blue-600 hover:underline ml-1 mobile-touch'
-                }, 'Sign in')
-              ),
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: `text-sm ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'} mobile-touch`
-              }, '🏠 Back to Home')
-            )
-          )
-        );
-      };
-
-      const ExpertApplicationPage = ({ navigateToPage }) => {
-        const { isDarkMode } = useDarkMode();
-        const [formData, setFormData] = useState({
-          name: '', email: '', phone: '', postcode: '', profession: '', 
-          experience: '', certifications: '', description: ''
-        });
-        const [cvData, setCvData] = useState(null);
-        const [loading, setLoading] = useState(false);
-        const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-        const handleCVUpload = async () => {
-          try {
-            const file = await uploadCV();
-            setCvData(file);
-            await triggerHaptic('success');
-            alert(`✅ CV uploaded: ${file.name}`);
-          } catch (error) {
-            await triggerHaptic('error');
-            alert('❌ Failed to upload CV.');
-          }
-        };
-
-        const handleSubmit = async (e) => {
-          e.preventDefault();
-          
-          const agreed = confirm('By submitting, you agree to expert terms and verification process. Continue?');
-          if (!agreed) return;
-
-          setLoading(true);
-          await triggerHaptic('medium');
-
-          try {
-            await dbOperations.saveExpertApplication({
-              ...formData,
-              cvData: cvData,
-              agreed_to_terms: true
-            });
-
-            await triggerHaptic('success');
-            alert('✅ Application submitted! We\'ll review and get back to you within 48 hours.');
-            navigateToPage('home');
-            
-          } catch (error) {
-            await triggerHaptic('error');
-            alert('❌ Failed to submit application.');
-          }
-          
-          setLoading(false);
-        };
-
-        return h('div', { className: `min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} safe-area-top pb-20` },
-          h('div', { className: `${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4` },
-            h('div', { className: 'flex items-center space-x-3' },
-              h('button', {
-                onClick: () => { triggerHaptic('light'); navigateToPage('home'); },
-                className: 'mobile-touch p-2'
-              }, '←'),
-              h('h1', { className: 'text-xl font-bold' }, '👨‍🔧 Become an Expert')
-            )
-          ),
-
-          h('div', { className: 'p-4 space-y-6' },
-            h('div', { className: `${cardClasses} rounded-xl p-6 shadow-lg` },
-              h('form', { onSubmit: handleSubmit, className: 'space-y-4' },
-                h('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-4' },
-                  h('input', {
-                    type: 'text',
-                    required: true,
-                    value: formData.name,
-                    onChange: (e) => setFormData(prev => ({ ...prev, name: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'Full Name'
-                  }),
-                  h('input', {
-                    type: 'email',
-                    required: true,
-                    value: formData.email,
-                    onChange: (e) => setFormData(prev => ({ ...prev, email: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'Email'
-                  })
-                ),
-
-                h('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-4' },
-                  h('input', {
-                    type: 'tel',
-                    required: true,
-                    value: formData.phone,
-                    onChange: (e) => setFormData(prev => ({ ...prev, phone: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'Phone Number'
-                  }),
-                  h('input', {
-                    type: 'text',
-                    required: true,
-                    value: formData.postcode,
-                    onChange: (e) => setFormData(prev => ({ ...prev, postcode: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                    placeholder: 'Service Area Postcode'
-                  })
-                ),
-
-                h('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-4' },
-                  h('select', {
-                    required: true,
-                    value: formData.profession,
-                    onChange: (e) => setFormData(prev => ({ ...prev, profession: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`
-                  },
-                    h('option', { value: '' }, 'Select Profession'),
-                    h('option', { value: 'Electrician' }, 'Electrician'),
-                    h('option', { value: 'Plumber' }, 'Plumber'),
-                    h('option', { value: 'Carpenter' }, 'Carpenter'),
-                    h('option', { value: 'General Handyman' }, 'General Handyman'),
-                    h('option', { value: 'Other' }, 'Other')
-                  ),
-                  h('select', {
-                    required: true,
-                    value: formData.experience,
-                    onChange: (e) => setFormData(prev => ({ ...prev, experience: e.target.value })),
-                    className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`
-                  },
-                    h('option', { value: '' }, 'Years of Experience'),
-                    h('option', { value: '2-3 years' }, '2-3 years'),
-                    h('option', { value: '4-5 years' }, '4-5 years'),
-                    h('option', { value: '6-10 years' }, '6-10 years'),
-                    h('option', { value: '15+ years' }, '15+ years')
-                  )
-                ),
-
-                h('textarea', {
-                  required: true,
-                  value: formData.certifications,
-                  onChange: (e) => setFormData(prev => ({ ...prev, certifications: e.target.value })),
-                  rows: 3,
-                  className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'Qualifications & Certifications...'
-                }),
-
-                h('textarea', {
-                  required: true,
-                  value: formData.description,
-                  onChange: (e) => setFormData(prev => ({ ...prev, description: e.target.value })),
-                  rows: 4,
-                  className: `w-full border rounded-lg px-4 py-3 text-base ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'}`,
-                  placeholder: 'About you and your services...'
-                }),
-
-                // CV Upload
-                h('div', { className: `border-2 border-dashed rounded-lg p-6 text-center ${
-                  cvData ? 'border-green-500 bg-green-50' : 'border-gray-300'
-                }` },
-                  !cvData ? (
-                    h('div', null,
-                      h('div', { className: 'text-4xl mb-3' }, '📄'),
-                      h('h4', { className: 'font-bold mb-2' }, 'Upload Your CV'),
-                      h('button', {
-                        type: 'button',
-                        onClick: handleCVUpload,
-                        className: 'bg-blue-600 text-white px-6 py-3 rounded-lg mobile-touch'
-                      }, '📁 Choose File')
-                    )
-                  ) : (
-                    h('div', null,
-                      h('div', { className: 'text-4xl mb-3 text-green-600' }, '✅'),
-                      h('h4', { className: 'font-bold text-green-700 mb-2' }, 'CV Uploaded'),
-                      h('p', { className: 'text-sm text-green-600' }, cvData.name)
-                    )
-                  )
-                ),
-
-                h('button', {
-                  type: 'submit',
-                  disabled: loading,
-                  className: 'w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-6 rounded-xl text-lg font-semibold mobile-touch shadow-lg disabled:opacity-50'
-                }, loading ? 'Submitting...' : '🚀 Submit Application')
-              )
-            )
-          )
-        );
-      };
-
-      // Main App Component
-      function DIYMatchMobileApp() {
-        const [user, setUser] = useState(null);
-        const [isLoading, setIsLoading] = useState(false);
-        const [isDarkMode, setIsDarkMode] = useState(false);
-        const [currentPage, setCurrentPage] = useState('home');
-        const [pageParams, setPageParams] = useState({});
-        const [isAppReady, setIsAppReady] = useState(false);
-
-        useEffect(() => {
-          const initApp = async () => {
-            console.log('🚀 [DIYMatch] Starting v3.0 application...');
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const paymentStatus = urlParams.get('payment');
-            
-            if (paymentStatus === 'success') {
-              await triggerHaptic('success');
-              alert('🎉 Payment successful! Your booking has been confirmed.');
-              window.history.replaceState({}, document.title, window.location.pathname);
-            } else if (paymentStatus === 'cancelled') {
-              await triggerHaptic('error');
-              alert('❌ Payment was cancelled. Your booking was not confirmed.');
-              window.history.replaceState({}, document.title, window.location.pathname);
-            }
-            
-            await initializeAppServices();
-            
-            console.log('\n📊 [STATUS] DIYMatch v3.0 Features:');
-            console.log('📧 Email System:', emailServiceReady ? '✅ ACTIVE' : '❌ Offline');
-            console.log('💳 Payments:', stripeReady ? '✅ LIVE' : '⚠️ Demo Mode');
-            console.log('🤖 AI Analysis:', '✅ Enhanced with Expert Matching');
-            console.log('👨‍🔧 Expert Network:', '✅ CV Upload & Admin Review');
-            console.log('🛒 Parts Shop:', '✅ Local Store Integration');
-            console.log('📦 Order Tracking:', '✅ Complete System');
-            console.log('⚙️ Account Settings:', '✅ Full Management');
-            console.log('👑 Admin Dashboard:', '✅ Revenue & Analytics');
-            console.log('🚀 Status: PRODUCTION READY v3.0');
-            
-            setIsAppReady(true);
-          };
-
-          initApp();
-        }, []);
-
-        const login = async (email, password, userType = 'user', name = '') => {
-          setIsLoading(true);
-          
-          try {
-            // Check if it's admin login
-            if (email.toLowerCase() === APP_CONFIG.adminEmail.toLowerCase() && password === APP_CONFIG.adminPassword) {
-              const adminUser = {
-                id: 'admin_1',
-                name: APP_CONFIG.adminName,
-                email: APP_CONFIG.adminEmail,
-                user_type: 'admin',
-                created_at: new Date().toISOString(),
-                location: 'London',
-                preferences: { theme: isDarkMode ? 'dark' : 'light', notifications: true }
-              };
-              setUser(adminUser);
-              setCurrentPage('dashboard');
-              await triggerHaptic('success');
-              return true;
-            }
-            
-            // Check existing user
-            let existingUser = await dbOperations.getUserByEmail(email);
-            if (existingUser && password) {
-              setUser(existingUser);
-              setCurrentPage('dashboard');
-              await triggerHaptic('success');
-              return true;
-            }
-            
-            // Register new user
-            if (name && !existingUser) {
-              const result = await dbOperations.createUser({
-                name,
-                email,
-                password,
-                user_type: userType
-              });
-              
-              if (result.success) {
-                setUser(result.user);
-                setCurrentPage('dashboard');
-                await triggerHaptic('success');
-                
-                // Send welcome email
-                await sendRealEmail(
-                  email,
-                  'Welcome to DIYMatch! 🔧',
-                  `Dear ${name},
-
-Welcome to DIYMatch - your AI-powered DIY assistant!
-
-Your account has been created successfully. You can now:
-✓ Get FREE AI analysis of your DIY problems
-✓ Connect with verified local experts
-✓ Shop for parts at local hardware stores
-✓ Track your orders and bookings
-
-Ready to solve your first DIY challenge? Start with our AI analysis tool!
-
-Best regards,
-The DIYMatch Team
-
----
-Questions? Reply to this email or visit our support center.`,
-                  'DIYMatch Welcome Team'
-                );
-                
-                return true;
+  return (
+    <div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t`}>
+      <div className="flex justify-around items-center py-2">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => {
+              triggerHaptic('light');
+              if (item.action) {
+                item.action();
+              } else if (user || item.page === 'home') {
+                navigateToPage(item.page);
+              } else {
+                navigateToPage('signup');
               }
+            }}
+            className={`flex flex-col items-center p-2 rounded-lg transition-all ${
+              currentPage === item.page || (item.id === 'account' && currentPage === 'account-settings')
+                ? isDarkMode ? 'text-blue-400 bg-gray-700' : 'text-blue-600 bg-blue-50'
+                : isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'
+            }`}
+          >
+            <span className="text-xl mb-1">{item.icon}</span>
+            <span className="text-xs font-medium">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Placeholder pages
+const createPlaceholderPage = (title, icon, description) => ({ navigateToPage }) => {
+  const { isDarkMode } = useDarkMode();
+  const { user } = useAuth();
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  if (!user && title !== 'Expert Application') {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4`}>
+        <div className={`${cardClasses} p-8 rounded-xl shadow-lg text-center`}>
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+          <p className="mb-6 text-gray-600">Please sign in to access {title.toLowerCase()}.</p>
+          <button
+            onClick={() => navigateToPage('login')}
+            className="bg-blue-600 text-white py-3 px-4 rounded-lg"
+          >
+            🔑 Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4`}>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className="p-2"
+          >
+            ←
+          </button>
+          <h1 className="text-xl font-bold">{icon} {title}</h1>
+        </div>
+      </div>
+      <div className="p-4">
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg text-center`}>
+          <div className="text-6xl mb-4">{icon}</div>
+          <h2 className="text-2xl font-bold mb-4">{title}</h2>
+          <p className="text-gray-600 mb-6">{description}</p>
+          <button
+            onClick={() => alert(`${title} feature will be fully implemented with all requested functionality!`)}
+            className="bg-blue-600 text-white py-3 px-6 rounded-lg"
+          >
+            🚀 Coming Soon
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AnalyzePage = createPlaceholderPage('AI Analysis', '🤖', 'Enhanced AI analysis with expert recommendations!');
+const ExpertsPage = createPlaceholderPage('Expert Search', '👨‍🔧', 'Find local professionals with AI-powered matching!');
+const PartsPage = createPlaceholderPage('Parts Shop', '🛒', 'Buy materials from local hardware stores!');
+
+const AccountSettingsPage = ({ navigateToPage }) => {
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { user, logout } = useAuth();
+  const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
+
+  if (!user) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4`}>
+        <div className={`${cardClasses} p-8 rounded-xl shadow-lg text-center`}>
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+          <button
+            onClick={() => navigateToPage('login')}
+            className="bg-blue-600 text-white py-3 px-4 rounded-lg"
+          >
+            🔑 Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
+      <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4`}>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => { triggerHaptic('light'); navigateToPage('home'); }}
+            className="p-2"
+          >
+            ←
+          </button>
+          <h1 className="text-xl font-bold">⚙️ Account Settings</h1>
+        </div>
+      </div>
+      <div className="p-4 space-y-4">
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+          <h3 className="text-lg font-bold mb-4">👤 Profile</h3>
+          <p>Name: {user.name}</p>
+          <p>Email: {user.email}</p>
+          <p>Type: {user.user_type}</p>
+        </div>
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+          <h3 className="text-lg font-bold mb-4">🎨 Preferences</h3>
+          <div className="flex items-center justify-between">
+            <span>Dark Mode</span>
+            <button
+              onClick={() => { toggleDarkMode(); triggerHaptic('light'); }}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+        <div className={`${cardClasses} rounded-xl p-6 shadow-lg`}>
+          <h3 className="text-lg font-bold mb-4">ℹ️ App Information</h3>
+          <p>Version: {APP_CONFIG.version}</p>
+          <p>Member Since: {new Date(user.created_at).toLocaleDateString()}</p>
+        </div>
+        <button
+          onClick={async () => {
+            const confirmed = confirm('Are you sure you want to sign out?');
+            if (confirmed) {
+              await logout();
+              navigateToPage('home');
             }
-            
-            return false;
-          } catch (error) {
-            console.error('Login error:', error);
-            return false;
-          } finally {
-            setIsLoading(false);
-          }
+          }}
+          className="w-full bg-red-600 text-white py-3 px-4 rounded-lg"
+        >
+          🚪 Sign Out
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN APP COMPONENT
+// ============================================================================
+
+export default function DIYMatchApp() {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
+
+  const login = async (email, password, userType = 'user', name = '') => {
+    setIsLoading(true);
+    
+    try {
+      // Check if it's admin login
+      if (email.toLowerCase() === APP_CONFIG.adminEmail.toLowerCase() && password === APP_CONFIG.adminPassword) {
+        const adminUser = {
+          id: 'admin_1',
+          name: APP_CONFIG.adminName,
+          email: APP_CONFIG.adminEmail,
+          user_type: 'admin',
+          created_at: new Date().toISOString(),
+          location: 'London',
+          preferences: { theme: isDarkMode ? 'dark' : 'light', notifications: true }
         };
-
-        const logout = async () => {
-          setUser(null);
-          setCurrentPage('home');
-          await triggerHaptic('medium');
-        };
-
-        const navigateToPage = (page, params = {}) => {
-          setCurrentPage(page);
-          setPageParams(params);
-        };
-
-        const toggleDarkMode = () => {
-          setIsDarkMode(prev => !prev);
-          if (user) {
-            dbOperations.updateUser(user.email, {
-              preferences: { ...user.preferences, theme: !isDarkMode ? 'dark' : 'light' }
-            });
-          }
-        };
-
-        if (!isAppReady) {
-          return null; // Splash screen is handled by HTML
-        }
-
-        const authContextValue = {
-          user,
-          login,
-          logout,
-          isLoading
-        };
-
-        const darkModeContextValue = {
-          isDarkMode,
-          toggleDarkMode
-        };
-
-        const renderCurrentPage = () => {
-          switch (currentPage) {
-            case 'home':
-              return h(WelcomePage, { navigateToPage });
-            case 'login':
-              return h(LoginPage, { navigateToPage });
-            case 'signup':
-              return h(SignupPage, { navigateToPage, pageParams });
-            case 'dashboard':
-              return h(DashboardPage, { navigateToPage });
-            case 'analyze':
-              return h(AnalyzePage, { navigateToPage });
-            case 'experts':
-              return h(ExpertsPage, { navigateToPage, pageParams });
-            case 'parts':
-              return h(PartsPage, { navigateToPage });
-            case 'contact':
-              return h(ContactPage, { navigateToPage });
-            case 'expert-application':
-              return h(ExpertApplicationPage, { navigateToPage });
-            case 'account-settings':
-              return h(AccountSettingsPage, { navigateToPage });
-            default:
-              return h(WelcomePage, { navigateToPage });
-          }
-        };
-
-        return h(AuthContext.Provider, { value: authContextValue },
-          h(DarkModeContext.Provider, { value: darkModeContextValue },
-            h('div', { className: `${isDarkMode ? 'dark' : ''}` },
-              renderCurrentPage(),
-              (currentPage !== 'home' && currentPage !== 'login' && currentPage !== 'signup') &&
-                h(BottomNav, { currentPage, navigateToPage })
-            )
-          )
-        );
+        setUser(adminUser);
+        setCurrentPage('dashboard');
+        await triggerHaptic('success');
+        return true;
       }
+      
+      // Check existing user
+      let existingUser = await dbOperations.getUserByEmail(email);
+      if (existingUser && password) {
+        setUser(existingUser);
+        setCurrentPage('dashboard');
+        await triggerHaptic('success');
+        return true;
+      }
+      
+      // Register new user
+      if (name && !existingUser) {
+        const result = await dbOperations.createUser({
+          name,
+          email,
+          password,
+          user_type: userType
+        });
+        
+        if (result.success) {
+          setUser(result.user);
+          setCurrentPage('dashboard');
+          await triggerHaptic('success');
+          return true;
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      // ============================================================================
-      // APP INITIALIZATION & RENDERING
-      // ============================================================================
-      
-      console.log('🔧 [DIYMatch] Initializing v3.0 production application...');
-      console.log('📧 [EMAIL] Bi-directional system: yahye21@hotmail.com');
-      console.log('💳 [PAYMENTS] Live Stripe integration');
-      console.log('🗄️ [DATABASE] Supabase connection');
-      console.log('🤖 [AI] Enhanced analysis with expert matching');
-      console.log('👨‍🔧 [EXPERTS] CV upload and admin review system');
-      console.log('🛒 [PARTS] Local store integration');
-      console.log('📦 [ORDERS] Complete tracking system');
-      console.log('⚙️ [SETTINGS] Full account management');
-      console.log('👑 [ADMIN] Complete dashboard with analytics');
-      console.log('📱 [MOBILE] Touch-optimized interface');
-      
-      // Render the application
-      const container = document.getElementById('root');
-      const root = ReactDOM.createRoot(container);
-      root.render(React.createElement(DIYMatchMobileApp));
-      
-      console.log('✅ [DIYMatch] v3.0 Application Started Successfully!');
-      console.log('\n🎯 [FEATURES] All Requested Features Implemented:');
-      console.log('✓ Email system with admin replies (yahye21@hotmail.com)');
-      console.log('✓ Expert CV upload and admin review system');
-      console.log('✓ Enhanced AI analysis with detailed information');
-      console.log('✓ Expert search with problem-based matching');
-      console.log('✓ Local parts shop with store integration');
-      console.log('✓ Complete order tracking system');
-      console.log('✓ Account settings with email/password management');
-      console.log('✓ Admin dashboard with full analytics');
-      console.log('✓ Dark mode and theme switching');
-      console.log('✓ Bottom navigation with all required sections');
-      console.log('✓ Welcome page preserved exactly as requested');
-      console.log('\n🚀 Ready for Production Deployment!');
-      console.log('\n👑 Admin Login: yahye21@hotmail.com / Graphics41_');
-      console.log('📧 Contact forms will be sent to: yahye21@hotmail.com');
-      console.log('💬 Admin can reply directly from dashboard');
-    })();
+  const logout = async () => {
+    setUser(null);
+    setCurrentPage('home');
+    await triggerHaptic('medium');
+  };
+
+  const navigateToPage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prev => !prev);
+  };
+
+  const authContextValue = { user, login, logout, isLoading };
+  const darkModeContextValue = { isDarkMode, toggleDarkMode };
+
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <WelcomePage navigateToPage={navigateToPage} />;
+      case 'login':
+        return <LoginPage navigateToPage={navigateToPage} />;
+      case 'signup':
+        return <SignupPage navigateToPage={navigateToPage} />;
+      case 'dashboard':
+        return <DashboardPage navigateToPage={navigateToPage} />;
+      case 'analyze':
+        return <AnalyzePage navigateToPage={navigateToPage} />;
+      case 'experts':
+        return <ExpertsPage navigateToPage={navigateToPage} />;
+      case 'parts':
+        return <PartsPage navigateToPage={navigateToPage} />;
+      case 'contact':
+        return <ContactPage navigateToPage={navigateToPage} />;
+      case 'expert-application':
+        return <ExpertApplicationPage navigateToPage={navigateToPage} />;
+      case 'account-settings':
+        return <AccountSettingsPage navigateToPage={navigateToPage} />;
+      default:
+        return <WelcomePage navigateToPage={navigateToPage} />;
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={authContextValue}>
+      <DarkModeContext.Provider value={darkModeContextValue}>
+        <div className={isDarkMode ? 'dark' : ''}>
+          {renderCurrentPage()}
+          {(currentPage !== 'home' && currentPage !== 'login' && currentPage !== 'signup') && (
+            <BottomNav currentPage={currentPage} navigateToPage={navigateToPage} />
+          )}
+        </div>
+      </DarkModeContext.Provider>
+    </AuthContext.Provider>
+  );
+}
