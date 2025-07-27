@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/(.*)",
@@ -7,33 +9,17 @@
   ],
   "headers": [
     {
-      "source": "/index.html",
+      "source": "/(.*)",
       "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
         {
           "key": "Cross-Origin-Embedder-Policy",
           "value": "unsafe-none"
-        },
-        {
-          "key": "Cross-Origin-Opener-Policy", 
-          "value": "unsafe-none"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' data: https:; object-src 'none'; base-uri 'self';"
         }
       ]
     }
-  ],
-  "functions": {
-    "pages/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "buildCommand": "",
-  "outputDirectory": ".",
-  "framework": null
+  ]
 }
