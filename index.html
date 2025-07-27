@@ -1,4 +1,16 @@
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import React, { useState, useContext, createContext } from 'react';
+
+// Suppress common development warnings in console
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  const message = args.join(' ');
+  if (message.includes('tailwindcss.com should not be used in production') ||
+      message.includes('apple-mobile-web-app') ||
+      message.includes('content="yes" is deprecated')) {
+    return; // Suppress these specific warnings
+  }
+  originalWarn.apply(console, args);
+};
 
 // ============================================================================
 // CONFIGURATION & DATA
@@ -21,20 +33,37 @@ const expertApplications = new Map();
 const userActivity = [];
 
 // Initialize sample data
-const sampleUsers = [
-  { email: 'john@example.com', name: 'John Smith', user_type: 'user' },
-  { email: 'expert@example.com', name: 'Mike Expert', user_type: 'expert' }
-];
-
-sampleUsers.forEach(user => {
-  registeredUsers.set(user.email, {
-    ...user,
-    id: `user_${Date.now()}_${Math.random()}`,
+const initializeData = () => {
+  // Add admin user
+  registeredUsers.set('yahye21@hotmail.com', {
+    id: 'admin_1',
+    name: 'Yahye Admin',
+    email: 'yahye21@hotmail.com',
+    user_type: 'admin',
     created_at: new Date().toISOString(),
     location: 'London',
     preferences: { theme: 'light', notifications: true }
   });
-});
+
+  // Add sample users
+  const sampleUsers = [
+    { email: 'john@example.com', name: 'John Smith', user_type: 'user' },
+    { email: 'expert@example.com', name: 'Mike Expert', user_type: 'expert' }
+  ];
+
+  sampleUsers.forEach(user => {
+    registeredUsers.set(user.email, {
+      ...user,
+      id: `user_${Date.now()}_${Math.random()}`,
+      created_at: new Date().toISOString(),
+      location: 'London',
+      preferences: { theme: 'light', notifications: true }
+    });
+  });
+};
+
+// Initialize data immediately
+initializeData();
 
 // ============================================================================
 // CONTEXTS
@@ -51,8 +80,12 @@ const useDarkMode = () => useContext(DarkModeContext);
 // ============================================================================
 
 const triggerHaptic = (type = 'light') => {
-  // Mock haptic feedback for web
   console.log(`Haptic feedback: ${type}`);
+  // Simple vibration for mobile devices
+  if (navigator.vibrate) {
+    const patterns = { light: 50, medium: 100, heavy: 200, success: [50, 100, 50], error: [100, 50, 100] };
+    navigator.vibrate(patterns[type] || 100);
+  }
 };
 
 const dbOperations = {
@@ -295,9 +328,7 @@ const LoginPage = ({ navigateToPage }) => {
   const [loading, setLoading] = useState(false);
   const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!email || !password) {
       alert('Please fill in all fields');
       return;
@@ -333,7 +364,7 @@ const LoginPage = ({ navigateToPage }) => {
                 isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
               }`}
               placeholder="Enter your email address"
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
             />
           </div>
           
@@ -347,7 +378,7 @@ const LoginPage = ({ navigateToPage }) => {
                 isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white'
               }`}
               placeholder="Enter your password"
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
             />
           </div>
           
@@ -398,9 +429,7 @@ const SignupPage = ({ navigateToPage }) => {
   const [loading, setLoading] = useState(false);
   const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!name || !email || !password) {
       alert('Please fill in all fields');
       return;
@@ -518,9 +547,7 @@ const ContactPage = ({ navigateToPage }) => {
   const [loading, setLoading] = useState(false);
   const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       alert('Please fill in all fields');
       return;
@@ -645,9 +672,7 @@ const ExpertApplicationPage = ({ navigateToPage }) => {
   const [loading, setLoading] = useState(false);
   const cardClasses = isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!formData.name || !formData.email || !formData.phone || !formData.postcode || 
         !formData.profession || !formData.experience || !formData.certifications || !formData.description) {
       alert('Please fill in all fields');
@@ -1192,7 +1217,7 @@ const AccountSettingsPage = ({ navigateToPage }) => {
 // ============================================================================
 
 export default function DIYMatchApp() {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
@@ -1212,7 +1237,7 @@ export default function DIYMatchApp() {
           location: 'London',
           preferences: { theme: isDarkMode ? 'dark' : 'light', notifications: true }
         };
-        setUser(adminUser);
+        setCurrentUser(adminUser);
         setCurrentPage('dashboard');
         await triggerHaptic('success');
         return true;
@@ -1221,7 +1246,7 @@ export default function DIYMatchApp() {
       // Check existing user
       let existingUser = await dbOperations.getUserByEmail(email);
       if (existingUser && password) {
-        setUser(existingUser);
+        setCurrentUser(existingUser);
         setCurrentPage('dashboard');
         await triggerHaptic('success');
         return true;
@@ -1237,7 +1262,7 @@ export default function DIYMatchApp() {
         });
         
         if (result.success) {
-          setUser(result.user);
+          setCurrentUser(result.user);
           setCurrentPage('dashboard');
           await triggerHaptic('success');
           return true;
@@ -1254,7 +1279,7 @@ export default function DIYMatchApp() {
   };
 
   const logout = async () => {
-    setUser(null);
+    setCurrentUser(null);
     setCurrentPage('home');
     await triggerHaptic('medium');
   };
@@ -1267,33 +1292,35 @@ export default function DIYMatchApp() {
     setIsDarkMode(prev => !prev);
   };
 
-  const authContextValue = { user, login, logout, isLoading };
+  const authContextValue = { user: currentUser, login, logout, isLoading };
   const darkModeContextValue = { isDarkMode, toggleDarkMode };
 
   const renderCurrentPage = () => {
+    const pageProps = { navigateToPage };
+    
     switch (currentPage) {
       case 'home':
-        return <WelcomePage navigateToPage={navigateToPage} />;
+        return <WelcomePage {...pageProps} />;
       case 'login':
-        return <LoginPage navigateToPage={navigateToPage} />;
+        return <LoginPage {...pageProps} />;
       case 'signup':
-        return <SignupPage navigateToPage={navigateToPage} />;
+        return <SignupPage {...pageProps} />;
       case 'dashboard':
-        return <DashboardPage navigateToPage={navigateToPage} />;
+        return <DashboardPage {...pageProps} />;
       case 'analyze':
-        return <AnalyzePage navigateToPage={navigateToPage} />;
+        return <AnalyzePage {...pageProps} />;
       case 'experts':
-        return <ExpertsPage navigateToPage={navigateToPage} />;
+        return <ExpertsPage {...pageProps} />;
       case 'parts':
-        return <PartsPage navigateToPage={navigateToPage} />;
+        return <PartsPage {...pageProps} />;
       case 'contact':
-        return <ContactPage navigateToPage={navigateToPage} />;
+        return <ContactPage {...pageProps} />;
       case 'expert-application':
-        return <ExpertApplicationPage navigateToPage={navigateToPage} />;
+        return <ExpertApplicationPage {...pageProps} />;
       case 'account-settings':
-        return <AccountSettingsPage navigateToPage={navigateToPage} />;
+        return <AccountSettingsPage {...pageProps} />;
       default:
-        return <WelcomePage navigateToPage={navigateToPage} />;
+        return <WelcomePage {...pageProps} />;
     }
   };
 
