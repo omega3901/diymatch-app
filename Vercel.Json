@@ -10,40 +10,30 @@
       "source": "/index.html",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        },
-        {
-          "key": "Expires",
-          "value": "0"
-        },
-        {
           "key": "Cross-Origin-Embedder-Policy",
           "value": "unsafe-none"
         },
         {
-          "key": "Cross-Origin-Opener-Policy",
-          "value": "same-origin-allow-popups"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
+          "key": "Cross-Origin-Opener-Policy", 
+          "value": "unsafe-none"
+        },
         {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' data: https:; object-src 'none'; base-uri 'self';"
         }
       ]
     }
   ],
   "functions": {
-    "app/api/*.js": {
+    "pages/api/**/*.js": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "framework": null
 }
