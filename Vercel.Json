@@ -1,6 +1,4 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/(.*)",
@@ -12,14 +10,44 @@
       "source": "/(.*)",
       "headers": [
         {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, proxy-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        },
+        {
+          "key": "Surrogate-Control",
+          "value": "no-store"
+        },
+        {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
         {
+          "key": "X-Frame-Options", 
+          "value": "SAMEORIGIN"
+        },
+        {
           "key": "Cross-Origin-Embedder-Policy",
           "value": "unsafe-none"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "unsafe-none"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; img-src * data: blob:; font-src * data:; connect-src *; media-src *; object-src *; frame-src *;"
         }
       ]
     }
-  ]
+  ],
+  "functions": {},
+  "regions": ["cle1"]
 }
