@@ -1595,15 +1595,15 @@ For urgent matters, please call our support line.`,
                 h('p', { className: 'text-sm text-gray-600 mb-3' }, 'Response within 24 hours'),
                 h('p', { className: 'text-sm text-blue-600' }, APP_CONFIG.supportEmail)
               ),
-              h('div', { className: `${cardClasses} rounded-xl p-4 shadow-lg text-center` },
-                h('div', { className: 'text-3xl mb-2' }, '💬'),
-                h('h3', { className: 'font-bold mb-2' }, 'Live Chat'),
-                h('p', { className: 'text-sm text-gray-600 mb-3' }, 'Available 9AM - 6PM'),
-                h('button', {
-                  onClick: () => alert('Live chat feature coming soon! For now, please use the contact form below.'),
-                  className: 'bg-green-600 text-white px-3 py-1 rounded text-sm mobile-touch'
-                }, 'Start Chat')
-              )
+h('div', { className: `${cardClasses} rounded-xl p-4 shadow-lg text-center` },
+  h('div', { className: 'text-3xl mb-2' }, '💬'),
+  h('h3', { className: 'font-bold mb-2' }, 'Live Chat'),
+  h('p', { className: 'text-sm text-gray-600 mb-3' }, 'Available 9AM - 6PM'),
+  h('button', {
+    onClick: () => alert('Live chat feature coming soon! For now, please use the contact form below.'),
+    className: 'bg-green-600 text-white px-3 py-1 rounded text-sm mobile-touch'
+  }, 'Start Chat')
+)
             ),
 
             // Contact Form
