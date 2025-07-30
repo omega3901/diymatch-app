@@ -1,0 +1,92 @@
+{
+  "name": "DIYMatch - AI-Powered DIY Assistant",
+  "short_name": "DIYMatch",
+  "description": "AI-powered DIY assistant connecting you with verified experts and providing instant problem analysis",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["productivity", "utilities", "lifestyle"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%232563eb'/><text x='96' y='120' font-size='100' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563eb'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563eb'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 1170'><rect fill='%23f9fafb' width='540' height='1170'/><text x='270' y='585' font-size='30' text-anchor='middle' fill='%23333'>AI Analysis Screen</text></svg>",
+      "sizes": "540x1170",
+      "type": "image/svg+xml",
+      "label": "AI Analysis"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 1170'><rect fill='%23f9fafb' width='540' height='1170'/><text x='270' y='585' font-size='30' text-anchor='middle' fill='%23333'>Expert Finder</text></svg>",
+      "sizes": "540x1170",
+      "type": "image/svg+xml",
+      "label": "Find Experts"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Analysis",
+      "short_name": "Analyze",
+      "description": "Start AI problem analysis",
+      "url": "/?page=analysis",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='60' font-size='50' text-anchor='middle'>🤖</text></svg>",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Emergency Help",
+      "short_name": "Emergency",
+      "description": "Get urgent assistance",
+      "url": "/?page=emergency",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='60' font-size='50' text-anchor='middle'>🚨</text></svg>",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope": "/",
+  "lang": "en-GB",
+  "dir": "ltr"
+}
