@@ -139,10 +139,11 @@
   </div>
 
   <!-- React 18 with Babel Standalone for JSX -->
- <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
-  <script type="text/babel">
+ <!-- Use jsDelivr instead of unpkg -->
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.5/babel.min.js"></script>
+  <script type="text/javascript">
     // ============================================================================
     // CONNECTIVITY CHECK
     // ============================================================================
