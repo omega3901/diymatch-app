@@ -10,35 +10,35 @@
   "categories": ["productivity", "utilities", "lifestyle"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%232563eb'/><text x='96' y='120' font-size='100' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563eb'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563eb'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='white'>🔧</text></svg>",
+      "src": "icons/icon-maskable-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
   "screenshots": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 1170'><rect fill='%23f9fafb' width='540' height='1170'/><text x='270' y='585' font-size='30' text-anchor='middle' fill='%23333'>AI Analysis Screen</text></svg>",
+      "src": "screenshots/ai-analysis.png",
       "sizes": "540x1170",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "label": "AI Analysis"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 1170'><rect fill='%23f9fafb' width='540' height='1170'/><text x='270' y='585' font-size='30' text-anchor='middle' fill='%23333'>Expert Finder</text></svg>",
+      "src": "screenshots/expert-finder.png",
       "sizes": "540x1170",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "label": "Find Experts"
     }
   ],
@@ -47,11 +47,12 @@
       "name": "AI Analysis",
       "short_name": "Analyze",
       "description": "Start AI problem analysis",
-      "url": "/?page=analysis",
+      "url": "/analysis",
       "icons": [
         {
-          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='60' font-size='50' text-anchor='middle'>🤖</text></svg>",
-          "sizes": "96x96"
+          "src": "icons/shortcut-ai-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
@@ -59,11 +60,12 @@
       "name": "Emergency Help",
       "short_name": "Emergency",
       "description": "Get urgent assistance",
-      "url": "/?page=emergency",
+      "url": "/emergency",
       "icons": [
         {
-          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><text x='48' y='60' font-size='50' text-anchor='middle'>🚨</text></svg>",
-          "sizes": "96x96"
+          "src": "icons/shortcut-emergency-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }
@@ -88,5 +90,11 @@
   "related_applications": [],
   "scope": "/",
   "lang": "en-GB",
-  "dir": "ltr"
+  "dir": "ltr",
+  "features": [
+    "AI problem analysis",
+    "Expert matching",
+    "Emergency assistance",
+    "Image sharing"
+  ]
 }
