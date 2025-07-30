@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="DIYMatch">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
   
   <title>DIYMatch - AI-Powered DIY Assistant</title>
   
@@ -17,7 +18,7 @@
   <link rel="manifest" href="data:application/json,{%22name%22:%22DIYMatch%22,%22short_name%22:%22DIYMatch%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22theme_color%22:%22%232563eb%22,%22background_color%22:%22%23ffffff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%232563eb'/><text x='256' y='320' font-size='280' text-anchor='middle' fill='white'>🔧</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">
   
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com/3.3.0"></script>
+<script src="https://cdn.tailwindcss.com/3.4.0"></script>
   
   <style>
     * {
@@ -138,10 +139,9 @@
   </div>
 
   <!-- React 18 with Babel Standalone for JSX -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+ <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.5/babel.min.js"></script>
   <script type="text/babel">
     // ============================================================================
     // CONNECTIVITY CHECK
