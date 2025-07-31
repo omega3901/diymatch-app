@@ -10,263 +10,245 @@
  <meta name="apple-mobile-web-app-title" content="DIYMatch">
  <meta name="application-name" content="DIYMatch">
  <meta name="description" content="AI-powered DIY assistant connecting you with verified experts and providing instant problem analysis">
- <meta name="format-detection" content="telephone=no">
- <meta name="msapplication-tap-highlight" content="no">
  
  <title>DIYMatch - AI-Powered DIY Assistant</title>
  
- <!-- PWA Manifest -->
- <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRJWU1hdGNoIiwKICAic2hvcnRfbmFtZSI6ICJESVlNYXRjaCIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAidGhlbWVfY29sb3IiOiAiIzI1NjNlYiIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCc+PHRleHQgeT0nMC45ZW0nIGZvbnQtc2l6ZT0nOTAnPvCflKc8L3RleHQ+PC9zdmc+IiwKICAgICAgInNpemVzIjogImFueSIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
- 
- <!-- Icons -->
- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔧</text></svg>">
- <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔧</text></svg>">
- 
- <!-- Tailwind CSS (Enhanced from newer version) -->
- <script src="https://cdn.tailwindcss.com"></script>
- 
+ <!-- Embedded CSS to avoid external dependencies -->
  <style>
-   /* Enhanced Mobile Optimizations from newer version */
+   /* Reset and base styles */
    * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
      -webkit-tap-highlight-color: transparent;
      -webkit-touch-callout: none;
-     -webkit-user-select: none;
-     user-select: none;
-     touch-action: pan-y;
-   }
-   
-   html {
-     -webkit-text-size-adjust: 100%;
-     -ms-text-size-adjust: 100%;
-   }
-   
-   input, textarea, select {
-     -webkit-user-select: text;
-     user-select: text;
-     touch-action: manipulation;
    }
    
    body {
-     margin: 0;
-     padding: 0;
      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
      -webkit-font-smoothing: antialiased;
      -moz-osx-font-smoothing: grayscale;
+     background-color: #f9fafb;
+     color: #111827;
      overflow-x: hidden;
-     background-color: #ffffff;
-     overscroll-behavior: none;
    }
-   
-   .safe-area-top { 
-     padding-top: env(safe-area-inset-top);
-     padding-top: constant(safe-area-inset-top);
-   }
-   
-   .safe-area-bottom { 
-     padding-bottom: env(safe-area-inset-bottom);
-     padding-bottom: constant(safe-area-inset-bottom);
-   }
-   
-   /* Enhanced Mobile Touch */
-   .mobile-touch {
+
+   /* Utility classes (Tailwind-like) */
+   .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+   .flex { display: flex; }
+   .flex-col { flex-direction: column; }
+   .items-center { align-items: center; }
+   .justify-center { justify-content: center; }
+   .justify-between { justify-content: space-between; }
+   .text-center { text-align: center; }
+   .min-h-screen { min-height: 100vh; }
+   .w-full { width: 100%; }
+   .h-full { height: 100%; }
+   .max-w-md { max-width: 28rem; }
+   .max-w-2xl { max-width: 42rem; }
+   .max-w-4xl { max-width: 56rem; }
+   .mx-auto { margin-left: auto; margin-right: auto; }
+   .mb-2 { margin-bottom: 0.5rem; }
+   .mb-4 { margin-bottom: 1rem; }
+   .mb-6 { margin-bottom: 1.5rem; }
+   .mb-8 { margin-bottom: 2rem; }
+   .mb-12 { margin-bottom: 3rem; }
+   .mt-4 { margin-top: 1rem; }
+   .mt-8 { margin-top: 2rem; }
+   .p-4 { padding: 1rem; }
+   .p-6 { padding: 1.5rem; }
+   .p-8 { padding: 2rem; }
+   .px-4 { padding-left: 1rem; padding-right: 1rem; }
+   .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+   .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+   .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+   .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+   .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+   .px-8 { padding-left: 2rem; padding-right: 2rem; }
+   .rounded-lg { border-radius: 0.5rem; }
+   .rounded-xl { border-radius: 0.75rem; }
+   .rounded-2xl { border-radius: 1rem; }
+   .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+   .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+
+   /* Colors */
+   .bg-white { background-color: #ffffff; }
+   .bg-gray-50 { background-color: #f9fafb; }
+   .bg-gray-100 { background-color: #f3f4f6; }
+   .bg-gray-200 { background-color: #e5e7eb; }
+   .bg-blue-50 { background-color: #eff6ff; }
+   .bg-blue-600 { background-color: #2563eb; }
+   .bg-blue-700 { background-color: #1d4ed8; }
+   .bg-green-600 { background-color: #059669; }
+   .bg-green-700 { background-color: #047857; }
+   .bg-red-600 { background-color: #dc2626; }
+   .bg-purple-600 { background-color: #9333ea; }
+   .text-white { color: #ffffff; }
+   .text-gray-600 { color: #4b5563; }
+   .text-gray-700 { color: #374151; }
+   .text-gray-800 { color: #1f2937; }
+   .text-blue-600 { color: #2563eb; }
+   .text-red-600 { color: #dc2626; }
+   .border { border-width: 1px; }
+   .border-gray-300 { border-color: #d1d5db; }
+
+   /* Typography */
+   .text-xs { font-size: 0.75rem; }
+   .text-sm { font-size: 0.875rem; }
+   .text-lg { font-size: 1.125rem; }
+   .text-xl { font-size: 1.25rem; }
+   .text-2xl { font-size: 1.5rem; }
+   .text-3xl { font-size: 1.875rem; }
+   .text-4xl { font-size: 2.25rem; }
+   .text-5xl { font-size: 3rem; }
+   .text-6xl { font-size: 3.75rem; }
+   .font-semibold { font-weight: 600; }
+   .font-bold { font-weight: 700; }
+
+   /* Grid */
+   .grid { display: grid; }
+   .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+   .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+   .gap-4 { gap: 1rem; }
+   .gap-6 { gap: 1.5rem; }
+   .gap-8 { gap: 2rem; }
+
+   /* Spacing */
+   .space-y-4 > * + * { margin-top: 1rem; }
+   .space-y-6 > * + * { margin-top: 1.5rem; }
+
+   /* Buttons and interactive elements */
+   .btn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     padding: 0.75rem 1.5rem;
+     border: none;
+     border-radius: 0.5rem;
+     font-weight: 600;
+     text-decoration: none;
      cursor: pointer;
-     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+     transition: all 0.2s;
      touch-action: manipulation;
-     will-change: transform;
+   }
+
+   .btn:hover {
+     transform: translateY(-1px);
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   }
+
+   .btn:active {
+     transform: translateY(0);
+   }
+
+   .btn-primary {
+     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+     color: white;
+   }
+
+   .btn-secondary {
+     background-color: #e5e7eb;
+     color: #374151;
+   }
+
+   .btn-success {
+     background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+     color: white;
+   }
+
+   .btn-danger {
+     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+     color: white;
+   }
+
+   /* Form elements */
+   .form-input {
+     width: 100%;
+     padding: 0.75rem 1rem;
+     border: 1px solid #d1d5db;
+     border-radius: 0.5rem;
+     font-size: 16px; /* Prevents zoom on iOS */
+     background-color: white;
+     transition: border-color 0.2s, box-shadow 0.2s;
+   }
+
+   .form-input:focus {
+     outline: none;
+     border-color: #3b82f6;
+     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+   }
+
+   /* Cards */
+   .card {
+     background: white;
+     border-radius: 1rem;
+     padding: 1.5rem;
+     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+     transition: transform 0.2s, box-shadow 0.2s;
+   }
+
+   .card:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+   }
+
+   .feature-card {
+     background: white;
+     border-radius: 1.5rem;
+     padding: 2rem;
+     text-align: center;
+     transition: all 0.3s ease;
+     cursor: pointer;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
    }
    
-   .mobile-touch:active {
-     transform: scale(0.96);
-     opacity: 0.85;
+   .feature-card:hover {
+     transform: translateY(-5px);
+     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
    }
    
-   /* Enhanced animations */
-   .fade-in {
-     animation: fadeIn 0.5s ease-out;
+   .feature-icon {
+     width: 80px;
+     height: 80px;
+     margin: 0 auto 1rem;
+     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+     border-radius: 20px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 2.5rem;
    }
-   
+
+   /* Animations */
    @keyframes fadeIn {
      from { opacity: 0; transform: translateY(10px); }
      to { opacity: 1; transform: translateY(0); }
    }
 
-   .float-animation {
-     animation: float 3s ease-in-out infinite;
+   @keyframes pulse {
+     0%, 100% { opacity: 1; }
+     50% { opacity: 0.5; }
    }
 
-   @keyframes float {
-     0%, 100% { transform: translateY(0); }
-     50% { transform: translateY(-10px); }
+   @keyframes spin {
+     to { transform: rotate(360deg); }
    }
 
-   /* Enhanced progress indicators */
-   .analysis-progress {
-     background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
-     background-size: 200% 100%;
-     animation: shimmer 2s linear infinite;
-   }
-   
-   @keyframes shimmer {
-     0% { background-position: -200% 0; }
-     100% { background-position: 200% 0; }
+   .fade-in { animation: fadeIn 0.5s ease-out; }
+   .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+   .animate-spin { animation: spin 1s linear infinite; }
+
+   /* Loading spinner */
+   .spinner {
+     width: 2rem;
+     height: 2rem;
+     border: 4px solid #e5e7eb;
+     border-top-color: #3b82f6;
+     border-radius: 50%;
+     animation: spin 1s linear infinite;
    }
 
-   /* Enhanced file upload */
-   .file-upload-zone {
-     border: 2px dashed #d1d5db;
-     border-radius: 12px;
-     padding: 2rem;
-     text-align: center;
-     cursor: pointer;
-     transition: all 0.3s ease;
-     background: #f9fafb;
-   }
-
-   .file-upload-zone:hover {
-     border-color: #3b82f6;
-     background: #eff6ff;
-   }
-
-   .file-upload-zone.drag-over {
-     border-color: #3b82f6;
-     background: #dbeafe;
-     transform: scale(1.02);
-   }
-
-   /* Enhanced verification badges */
-   .verification-badge {
-     display: inline-flex;
-     align-items: center;
-     gap: 0.25rem;
-     padding: 0.25rem 0.5rem;
-     border-radius: 9999px;
-     font-size: 0.75rem;
-     font-weight: 600;
-   }
-
-   .verification-badge.verified {
-     background: #dcfce7;
-     color: #166534;
-   }
-
-   .verification-badge.pending {
-     background: #fef3c7;
-     color: #854d0e;
-   }
-
-   .verification-badge.rejected {
-     background: #fee2e2;
-     color: #991b1b;
-   }
-
-   /* Enhanced star rating */
-   .star-rating {
-     display: flex;
-     gap: 4px;
-   }
-
-   .star {
-     font-size: 20px;
-     color: #d1d5db;
-     cursor: pointer;
-     transition: all 0.2s;
-   }
-
-   .star.filled {
-     color: #fbbf24;
-     transform: scale(1.1);
-   }
-
-   .star:hover {
-     color: #fbbf24;
-     transform: scale(1.2);
-   }
-
-   /* Enhanced modal */
-   .modal-backdrop {
-     position: fixed;
-     top: 0;
-     left: 0;
-     width: 100%;
-     height: 100%;
-     background: rgba(0, 0, 0, 0.5);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     z-index: 1000;
-     backdrop-filter: blur(4px);
-     -webkit-backdrop-filter: blur(4px);
-     animation: fadeIn 0.3s ease-out;
-   }
-   
-   .modal-content {
-     background: white;
-     border-radius: 20px;
-     padding: 24px;
-     max-width: 500px;
-     width: 90%;
-     max-height: 90vh;
-     overflow-y: auto;
-     animation: slideUp 0.3s ease-out;
-   }
-   
-   @keyframes slideUp {
-     from { transform: translateY(20px); opacity: 0; }
-     to { transform: translateY(0); opacity: 1; }
-   }
-
-   /* Enhanced liability waiver */
-   .liability-waiver {
-     background: #fef3c7;
-     border: 2px solid #f59e0b;
-     border-radius: 12px;
-     padding: 1rem;
-     margin: 1rem 0;
-   }
-
-   .liability-waiver-header {
-     color: #92400e;
-     font-weight: 600;
-     margin-bottom: 0.5rem;
-     display: flex;
-     align-items: center;
-     gap: 0.5rem;
-   }
-
-   .liability-waiver-text {
-     color: #78350f;
-     font-size: 0.875rem;
-     line-height: 1.4;
-   }
-
-   /* Other existing styles maintained */
-   .smooth-scroll {
-     -webkit-overflow-scrolling: touch;
-     overscroll-behavior-y: contain;
-   }
-   
-   .loading-pulse { 
-     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
-   }
-   
-   @keyframes pulse { 
-     0%, 100% { opacity: 1; } 
-     50% { opacity: 0.5; } 
-   }
-   
-   input[type="text"], 
-   input[type="email"], 
-   input[type="password"], 
-   input[type="tel"], 
-   textarea, 
-   select { 
-     font-size: 16px !important;
-     -webkit-appearance: none;
-     appearance: none;
-     border-radius: 0;
-   }
-   
+   /* Splash screen */
    .splash-screen {
      position: fixed;
      top: 0;
@@ -281,215 +263,7 @@
      color: white;
    }
 
-   .offline-message {
-     position: fixed;
-     top: 0;
-     left: 0;
-     right: 0;
-     background: #ef4444;
-     color: white;
-     padding: 10px;
-     text-align: center;
-     z-index: 10000;
-     font-size: 14px;
-     animation: slideDown 0.3s ease-out;
-   }
-   
-   @keyframes slideDown {
-     from { transform: translateY(-100%); }
-     to { transform: translateY(0); }
-   }
-
-   .glass-effect {
-     background: rgba(255, 255, 255, 0.1);
-     backdrop-filter: blur(10px);
-     -webkit-backdrop-filter: blur(10px);
-     border: 1px solid rgba(255, 255, 255, 0.2);
-   }
-
-   .gradient-border {
-     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-     padding: 2px;
-     border-radius: 12px;
-   }
-
-   .slide-in {
-     animation: slideIn 0.3s ease-out;
-   }
-
-   @keyframes slideIn {
-     from { transform: translateX(100%); opacity: 0; }
-     to { transform: translateX(0); opacity: 1; }
-   }
-
-   .notification-badge {
-     position: absolute;
-     top: -4px;
-     right: -4px;
-     background: #ef4444;
-     color: white;
-     font-size: 10px;
-     padding: 2px 6px;
-     border-radius: 10px;
-     font-weight: bold;
-     animation: pulse 2s infinite;
-   }
-
-   .progress-steps {
-     display: flex;
-     justify-content: space-between;
-     margin-bottom: 2rem;
-     position: relative;
-   }
-
-   .progress-step {
-     flex: 1;
-     text-align: center;
-     position: relative;
-     z-index: 1;
-   }
-
-   .progress-step:not(:last-child)::after {
-     content: '';
-     position: absolute;
-     top: 20px;
-     left: 50%;
-     width: 100%;
-     height: 2px;
-     background: #e5e7eb;
-     z-index: -1;
-   }
-
-   .progress-step.completed:not(:last-child)::after {
-     background: #3b82f6;
-     transition: all 0.3s ease;
-   }
-
-   .progress-step-circle {
-     width: 40px;
-     height: 40px;
-     border-radius: 50%;
-     background: #e5e7eb;
-     margin: 0 auto 8px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-weight: 600;
-     transition: all 0.3s ease;
-     position: relative;
-   }
-
-   .progress-step.completed .progress-step-circle {
-     background: #3b82f6;
-     color: white;
-     transform: scale(1.1);
-   }
-
-   .progress-step.active .progress-step-circle {
-     background: #3b82f6;
-     color: white;
-     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
-     animation: pulse 2s infinite;
-   }
-
-   .recording-animation {
-     width: 60px;
-     height: 60px;
-     border-radius: 50%;
-     background: #ef4444;
-     position: relative;
-     animation: recordPulse 1.5s ease-in-out infinite;
-   }
-
-   @keyframes recordPulse {
-     0% { transform: scale(1); opacity: 1; }
-     50% { transform: scale(1.1); opacity: 0.8; }
-     100% { transform: scale(1); opacity: 1; }
-   }
-   
-   .recording-wave {
-     position: absolute;
-     top: 50%;
-     left: 50%;
-     transform: translate(-50%, -50%);
-     width: 100%;
-     height: 100%;
-     border-radius: 50%;
-     border: 2px solid #ef4444;
-     animation: wave 1.5s ease-out infinite;
-   }
-   
-   @keyframes wave {
-     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-     100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-   }
-
-   .chat-bubble {
-     max-width: 70%;
-     padding: 12px 16px;
-     border-radius: 18px;
-     margin-bottom: 8px;
-     word-wrap: break-word;
-     animation: fadeIn 0.3s ease-out;
-   }
-
-   .chat-bubble.user {
-     background: #3b82f6;
-     color: white;
-     align-self: flex-end;
-     border-bottom-right-radius: 4px;
-   }
-
-   .chat-bubble.expert {
-     background: #f3f4f6;
-     color: #1f2937;
-     align-self: flex-start;
-     border-bottom-left-radius: 4px;
-   }
-   
-   .typing-indicator {
-     display: flex;
-     gap: 4px;
-     padding: 8px 12px;
-   }
-   
-   .typing-dot {
-     width: 8px;
-     height: 8px;
-     background: #9ca3af;
-     border-radius: 50%;
-     animation: typing 1.4s infinite;
-   }
-   
-   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-   .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-   
-   @keyframes typing {
-     0%, 60%, 100% { transform: translateY(0); }
-     30% { transform: translateY(-10px); }
-   }
-
-   .emergency-button {
-     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-     animation: emergencyPulse 2s ease-in-out infinite;
-   }
-
-   @keyframes emergencyPulse {
-     0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-     50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-   }
-
-   .skeleton {
-     background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-     background-size: 200% 100%;
-     animation: skeleton 1.2s ease-in-out infinite;
-   }
-
-   @keyframes skeleton {
-     0% { background-position: 200% 0; }
-     100% { background-position: -200% 0; }
-   }
-
+   /* Bottom navigation */
    .bottom-nav {
      position: fixed;
      bottom: 0;
@@ -514,6 +288,7 @@
      transition: all 0.2s;
      cursor: pointer;
      position: relative;
+     text-decoration: none;
    }
 
    .bottom-nav-item.active {
@@ -542,1744 +317,142 @@
      transform: scale(1.2);
    }
 
-   .admin-stat-card {
-     background: white;
-     border-radius: 12px;
-     padding: 1.5rem;
-     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-     transition: all 0.3s ease;
+   /* Safe areas for mobile devices */
+   .safe-area-top { 
+     padding-top: env(safe-area-inset-top);
+     padding-top: constant(safe-area-inset-top);
    }
    
-   .admin-stat-card:hover {
-     transform: translateY(-2px);
-     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+   .safe-area-bottom { 
+     padding-bottom: env(safe-area-inset-bottom);
+     padding-bottom: constant(safe-area-inset-bottom);
    }
 
-   .admin-stat-value {
-     font-size: 2rem;
-     font-weight: bold;
-     color: #1f2937;
-   }
-
-   .admin-stat-label {
-     font-size: 0.875rem;
-     color: #6b7280;
-     margin-top: 0.25rem;
-   }
-   
-   .feature-card {
-     background: white;
-     border-radius: 20px;
-     padding: 2rem;
-     text-align: center;
-     transition: all 0.3s ease;
-     cursor: pointer;
-     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-   }
-   
-   .feature-card:hover {
-     transform: translateY(-5px);
-     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-   }
-   
-   .feature-icon {
-     width: 80px;
-     height: 80px;
-     margin: 0 auto 1rem;
-     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-     border-radius: 20px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-size: 2.5rem;
-   }
-   
-   .success-animation {
-     width: 100px;
-     height: 100px;
-     margin: 0 auto;
-     background: #10b981;
-     border-radius: 50%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     animation: successPop 0.5s ease-out;
-   }
-   
-   @keyframes successPop {
-     0% { transform: scale(0); opacity: 0; }
-     50% { transform: scale(1.2); }
-     100% { transform: scale(1); opacity: 1; }
-   }
-   
-   .ai-suggestion {
-     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-     border: 1px solid #0284c7;
-     border-radius: 12px;
-     padding: 16px;
-     margin: 12px 0;
-     position: relative;
-     overflow: hidden;
-   }
-   
-   .ai-suggestion::before {
-     content: '✨';
-     position: absolute;
-     top: 10px;
-     right: 10px;
-     font-size: 20px;
-     animation: twinkle 2s infinite;
-   }
-   
-   @keyframes twinkle {
-     0%, 100% { opacity: 1; transform: scale(1); }
-     50% { opacity: 0.5; transform: scale(0.8); }
-   }
-   
+   /* Responsive design */
    @media (max-width: 768px) {
-     .modal-content {
-       width: calc(100vw - 2rem);
-       margin: 1rem;
-     }
-     
-     .feature-card {
-       padding: 1.5rem;
-     }
-     
-     .feature-icon {
-       width: 60px;
-       height: 60px;
-       font-size: 2rem;
-     }
+     .container { padding: 0 0.5rem; }
+     .text-5xl { font-size: 2.5rem; }
+     .text-4xl { font-size: 2rem; }
+     .feature-card { padding: 1.5rem; }
+     .feature-icon { width: 60px; height: 60px; font-size: 2rem; }
+     .grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
    }
-   
-   .install-button {
-     position: fixed;
-     bottom: 100px;
-     right: 20px;
+
+   @media (max-width: 640px) {
+     .grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+   }
+
+   /* Utility for hiding elements */
+   .hidden { display: none !important; }
+
+   /* Step indicator */
+   .steps {
+     display: flex;
+     justify-content: space-between;
+     margin-bottom: 2rem;
+     position: relative;
+   }
+
+   .step {
+     flex: 1;
+     text-align: center;
+     position: relative;
+     z-index: 1;
+   }
+
+   .step:not(:last-child)::after {
+     content: '';
+     position: absolute;
+     top: 20px;
+     left: 50%;
+     width: 100%;
+     height: 2px;
+     background: #e5e7eb;
+     z-index: -1;
+   }
+
+   .step.completed:not(:last-child)::after {
+     background: #3b82f6;
+   }
+
+   .step-circle {
+     width: 40px;
+     height: 40px;
+     border-radius: 50%;
+     background: #e5e7eb;
+     margin: 0 auto 8px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: 600;
+     transition: all 0.3s ease;
+     position: relative;
+   }
+
+   .step.completed .step-circle {
      background: #3b82f6;
      color: white;
-     padding: 12px 24px;
-     border-radius: 50px;
-     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-     display: none;
-     z-index: 999;
-     animation: slideIn 0.3s ease-out;
+     transform: scale(1.1);
    }
-   
-   .install-button.show {
-     display: block;
-   }
-   
-   .ios-scroll-fix {
-     position: fixed;
-     width: 100%;
-     height: 100%;
-     overflow: auto;
-     -webkit-overflow-scrolling: touch;
+
+   .step.active .step-circle {
+     background: #3b82f6;
+     color: white;
+     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
    }
  </style>
 </head>
 <body>
- <div id="offline-message" class="offline-message" style="display: none;">
-   No internet connection. Some features may not work.
+ <div id="offline-message" class="hidden" style="position: fixed; top: 0; left: 0; right: 0; background: #ef4444; color: white; padding: 10px; text-align: center; z-index: 10000; font-size: 14px;">
+   📶 No internet connection. Working in offline mode.
  </div>
 
- <div id="root"></div>
- 
- <!-- Splash Screen -->
- <div id="splash-screen" class="splash-screen">
-   <div class="text-center">
-     <div class="text-6xl mb-4 animate-bounce">🔧</div>
-     <h1 class="text-3xl font-bold mb-2">DIYMatch</h1>
-     <p class="text-lg opacity-80">AI-Powered DIY Assistant</p>
-     <div class="mt-8">
-       <div class="loading-pulse inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+ <div id="root">
+   <!-- Loading will be replaced by app -->
+   <div class="min-h-screen flex items-center justify-content-center">
+     <div class="text-center">
+       <div class="spinner mx-auto mb-4"></div>
+       <p class="text-gray-600">Loading DIYMatch...</p>
      </div>
    </div>
  </div>
  
- <!-- PWA Install Button -->
- <button id="install-button" class="install-button mobile-touch">
-   <span class="flex items-center gap-2">
-     <span>📲</span>
-     <span>Install App</span>
-   </span>
- </button>
+ <!-- Splash Screen -->
+ <div id="splash-screen" class="splash-screen">
+   <div class="text-center">
+     <div class="text-6xl mb-4 animate-pulse">🔧</div>
+     <h1 class="text-3xl font-bold mb-2">DIYMatch</h1>
+     <p class="text-lg" style="opacity: 0.8;">AI-Powered DIY Assistant</p>
+     <div class="mt-8">
+       <div class="spinner mx-auto" style="border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>
+     </div>
+   </div>
+ </div>
 
- <!-- React 18 -->
- <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
- <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
- 
  <script>
    'use strict';
    
    // ============================================================================
-   // ENHANCED SERVICE WORKER REGISTRATION (from newer version)
-   // ============================================================================
-   
-   if ('serviceWorker' in navigator) {
-     window.addEventListener('load', () => {
-       const swCode = `
-         const CACHE_NAME = 'diymatch-v2';
-         const urlsToCache = [
-           '/',
-           'https://unpkg.com/react@18/umd/react.production.min.js',
-           'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-           'https://cdn.tailwindcss.com'
-         ];
-         
-         self.addEventListener('install', event => {
-           event.waitUntil(
-             caches.open(CACHE_NAME)
-               .then(cache => cache.addAll(urlsToCache))
-           );
-         });
-         
-         self.addEventListener('fetch', event => {
-           event.respondWith(
-             caches.match(event.request)
-               .then(response => response || fetch(event.request))
-               .catch(() => caches.match('/'))
-           );
-         });
-       `;
-       
-       const blob = new Blob([swCode], { type: 'application/javascript' });
-       const swUrl = URL.createObjectURL(blob);
-       
-       navigator.serviceWorker.register(swUrl).then(registration => {
-         console.log('ServiceWorker registered:', registration);
-       }).catch(error => {
-         console.log('ServiceWorker registration failed:', error);
-       });
-     });
-   }
-   
-   // ============================================================================
-   // ENHANCED PWA INSTALL PROMPT (from newer version)
-   // ============================================================================
-   
-   let deferredPrompt;
-   const installButton = document.getElementById('install-button');
-   
-   window.addEventListener('beforeinstallprompt', (e) => {
-     e.preventDefault();
-     deferredPrompt = e;
-     installButton.classList.add('show');
-   });
-   
-   installButton.addEventListener('click', async () => {
-     if (deferredPrompt) {
-       deferredPrompt.prompt();
-       const { outcome } = await deferredPrompt.userChoice;
-       if (outcome === 'accepted') {
-         console.log('User accepted the install prompt');
-       }
-       deferredPrompt = null;
-       installButton.classList.remove('show');
-     }
-   });
-   
-   // ============================================================================
-   // ENHANCED CONNECTIVITY & ERROR HANDLING (from newer version)
-   // ============================================================================
-   
-   function checkConnectivity() {
-     const offlineMessage = document.getElementById('offline-message');
-     if (!navigator.onLine) {
-       offlineMessage.style.display = 'block';
-     } else {
-       offlineMessage.style.display = 'none';
-     }
-   }
-
-   window.addEventListener('online', checkConnectivity);
-   window.addEventListener('offline', checkConnectivity);
-   checkConnectivity();
-
-   // Enhanced error boundary
-   class ErrorBoundary extends React.Component {
-     constructor(props) {
-       super(props);
-       this.state = { hasError: false, error: null };
-     }
-
-     static getDerivedStateFromError(error) {
-       return { hasError: true, error };
-     }
-
-     componentDidCatch(error, errorInfo) {
-       console.error('Error caught by boundary:', error, errorInfo);
-       analytics.trackError(error, true);
-     }
-
-     render() {
-       if (this.state.hasError) {
-         return React.createElement('div', { className: 'min-h-screen flex items-center justify-center p-4' },
-           React.createElement('div', { className: 'text-center' },
-             React.createElement('div', { className: 'text-6xl mb-4' }, '😔'),
-             React.createElement('h1', { className: 'text-2xl font-bold mb-2' }, 'Something went wrong'),
-             React.createElement('p', { className: 'text-gray-600 mb-4' }, 'Please refresh the page to try again'),
-             React.createElement('button', {
-               onClick: () => window.location.reload(),
-               className: 'bg-blue-600 text-white px-6 py-3 rounded-lg mobile-touch'
-             }, 'Refresh Page')
-           )
-         );
-       }
-
-       return this.props.children;
-     }
-   }
-
-   // ============================================================================
-   // ENHANCED APP CONFIGURATION (combining best from both)
+   // CONFIGURATION
    // ============================================================================
    
    const APP_CONFIG = {
      name: 'DIYMatch',
-     version: '2.1.0',
+     version: '3.1.0',
      description: 'AI-Powered DIY Assistant with Expert Network',
-     adminEmail: 'yahye21@hotmail.com', // Updated from newer version
-     adminPassword: 'Graphics41_', // Updated from newer version
      supportEmail: 'support@diymatch.co.uk',
-     aiAnalysisPrice: 4.99,
-     sameDayMultiplier: 1.5,
-     platformCommission: 0.15,
-     sameDayCommission: 0.20,
      emergencyHotline: '0800-DIY-HELP',
-     maxImageSize: 10 * 1024 * 1024, // 10MB
-     maxVideoSize: 100 * 1024 * 1024, // 100MB
-     maxFileSize: 50 * 1024 * 1024, // 50MB (Enhanced from newer version)
-     freeAnalysesPerMonth: 1,
-     referralBonus: 5.00,
-     expertVerificationRequired: true,
-     minimumExpertRating: 4.0,
-     // Enhanced features from newer version
-     supportedFileTypes: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-     responseTimeTargets: {
-       urgent: '1 hour',
-       normal: '4 hours',
-       scheduled: '24 hours'
-     },
-     supportChatEnabled: true,
-     aiFeatures: {
-       voiceCommands: true,
-       arMeasurement: true,
-       predictiveMaintenance: true,
-       smartScheduling: true,
-       priceNegotiation: true,
-       qualityAssurance: true
-     }
+     aiAnalysisPrice: 4.99,
+     maxImageSize: 10 * 1024 * 1024,
+     freeAnalysesPerMonth: 1
    };
 
    // ============================================================================
-   // ENHANCED DATABASE SERVICE (combining IndexedDB from newer version)
+   // UTILITY FUNCTIONS
    // ============================================================================
    
-   class DatabaseService {
-     constructor() {
-       this.cache = new Map();
-       this.syncQueue = [];
-       this.isOnline = navigator.onLine;
-       this.dbName = 'DIYMatchDB';
-       this.version = 1;
-       this.initIndexedDB();
-     }
-
-     async initIndexedDB() {
-       if ('indexedDB' in window) {
-         try {
-           const request = indexedDB.open(this.dbName, this.version);
-           
-           request.onerror = () => console.error('IndexedDB error');
-           
-           request.onsuccess = (event) => {
-             this.db = event.target.result;
-             console.log('IndexedDB initialized');
-           };
-           
-           request.onupgradeneeded = (event) => {
-             const db = event.target.result;
-             
-             // Create object stores for enhanced functionality
-             if (!db.objectStoreNames.contains('users')) {
-               db.createObjectStore('users', { keyPath: 'id' });
-             }
-             if (!db.objectStoreNames.contains('analyses')) {
-               db.createObjectStore('analyses', { keyPath: 'id' });
-             }
-             if (!db.objectStoreNames.contains('experts')) {
-               db.createObjectStore('experts', { keyPath: 'id' });
-             }
-             if (!db.objectStoreNames.contains('bookings')) {
-               db.createObjectStore('bookings', { keyPath: 'id' });
-             }
-             // Enhanced stores from newer version
-             if (!db.objectStoreNames.contains('documents')) {
-               db.createObjectStore('documents', { keyPath: 'id' });
-             }
-             if (!db.objectStoreNames.contains('verifications')) {
-               db.createObjectStore('verifications', { keyPath: 'id' });
-             }
-           };
-         } catch (error) {
-           console.error('IndexedDB init error:', error);
-         }
-       }
-     }
-
-     async query(collection, operation, data) {
-       try {
-         if (!this.isOnline) {
-           this.syncQueue.push({ collection, operation, data, timestamp: Date.now() });
-           return this.handleOfflineOperation(collection, operation, data);
-         }
-
-         const result = this.handleOfflineOperation(collection, operation, data);
-         this.updateCache(collection, result);
-         return result;
-       } catch (error) {
-         console.error('Database query error:', error);
-         return this.handleOfflineOperation(collection, operation, data);
-       }
-     }
-
-     handleOfflineOperation(collection, operation, data) {
-       const localData = JSON.parse(localStorage.getItem(`diymatch_${collection}`) || '{}');
-       
-       switch (operation) {
-         case 'create':
-           const id = `${collection}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-           localData[id] = { ...data, id, _local: true, createdAt: new Date().toISOString() };
-           break;
-         case 'update':
-           if (localData[data.id]) {
-             localData[data.id] = { ...localData[data.id], ...data, updatedAt: new Date().toISOString() };
-           }
-           break;
-         case 'delete':
-           delete localData[data.id];
-           break;
-         case 'find':
-           return Object.values(localData).filter(item => 
-             Object.entries(data).every(([key, value]) => item[key] === value)
-           );
-       }
-       
-       localStorage.setItem(`diymatch_${collection}`, JSON.stringify(localData));
-       return { success: true, data: localData[data.id] || localData };
-     }
-
-     async sync() {
-       if (!this.isOnline || this.syncQueue.length === 0) return;
-       
-       const queue = [...this.syncQueue];
-       this.syncQueue = [];
-       
-       for (const item of queue) {
-         try {
-           await this.query(item.collection, item.operation, item.data);
-         } catch (error) {
-           this.syncQueue.push(item);
-         }
-       }
-     }
-
-     updateCache(collection, data) {
-       this.cache.set(collection, data);
-     }
-   }
-
-   const db = new DatabaseService();
-
-   // Sync when coming online
-   window.addEventListener('online', () => {
-     db.isOnline = true;
-     db.sync();
-   });
-
-   window.addEventListener('offline', () => {
-     db.isOnline = false;
-   });
-
-   // ============================================================================
-   // ENHANCED STATE MANAGEMENT (keeping V14 structure with improvements)
-   // ============================================================================
-   
-   const registeredUsers = new Map();
-   const expertProfiles = new Map();
-   const quoteRequests = new Map();
-   const bookings = new Map();
-   const aiAnalysisHistory = new Map();
-   const userAnalysisPurchases = new Map();
-   const userFreeAnalyses = new Map();
-   const userMessages = new Map();
-   const messageThreads = new Map();
-   const expertReviews = new Map();
-   const savedProjects = new Map();
-   const emergencyRequests = new Map();
-   const userNotifications = new Map();
-   const referralCodes = new Map();
-   const expertPortfolios = new Map();
-   const voiceNotes = new Map();
-   const arSessions = new Map();
-   // Enhanced from newer version
-   const expertDocuments = new Map();
-   const supportTickets = new Map();
-   const systemBackups = new Map();
-   const userPreferences = new Map();
-   const aiSuggestions = new Map();
-   const maintenanceSchedules = new Map();
-   const priceNegotiations = new Map();
-   const verificationRecords = new Map();
-   
-   // Enhanced parts stores database
-   const partsStores = new Map([
-     ['london', [
-       {
-         id: 'store1',
-         name: 'B&Q Wembley',
-         address: 'Stadium Retail Park, Wembley, HA9 0EW',
-         phone: '020 8902 7200',
-         distance: '2.3 miles',
-         categories: ['plumbing', 'electrical', 'tools', 'paint', 'building'],
-         openHours: 'Mon-Sat: 7am-8pm, Sun: 10am-4pm',
-         hasParking: true,
-         wheelchairAccess: true,
-         inStockItems: 847,
-         rating: 4.3,
-         priceMatch: true
-       },
-       {
-         id: 'store2',
-         name: 'Screwfix Camden',
-         address: '45 Camden High St, NW1 7JH',
-         phone: '020 7387 4488',
-         distance: '4.1 miles',
-         categories: ['tools', 'electrical', 'plumbing', 'safety'],
-         openHours: 'Mon-Fri: 6am-8pm, Sat: 7am-6pm, Sun: 9am-4pm',
-         hasParking: false,
-         wheelchairAccess: true,
-         inStockItems: 523,
-         rating: 4.6,
-         priceMatch: true
-       },
-       // Enhanced store data...
-       {
-         id: 'store3',
-         name: 'Wickes Tottenham',
-         address: 'Broad Lane, N15 4QD',
-         phone: '020 8808 3366',
-         distance: '5.2 miles',
-         categories: ['building', 'plumbing', 'paint', 'tools'],
-         openHours: 'Mon-Sat: 7am-7pm, Sun: 10am-4pm',
-         hasParking: true,
-         wheelchairAccess: true,
-         inStockItems: 692,
-         rating: 4.1,
-         priceMatch: false
-       }
-     ]]
-   ]);
-
-   // ============================================================================
-   // ENHANCED PAYMENT SERVICE (with liability waiver from newer version)
-   // ============================================================================
-   
-   class PaymentService {
-     constructor() {
-       this.paymentMethods = new Map();
-       this.transactions = new Map();
-     }
-
-     // Enhanced payment processing with liability waiver
-     async processPayment(amount, metadata, paymentMethod = 'card', liabilityAccepted = false) {
-       try {
-         // Require liability acceptance for expert bookings
-         if (metadata.type === 'expert_booking' && !liabilityAccepted) {
-           throw new Error('Liability waiver must be accepted before payment');
-         }
-
-         const transaction = {
-           id: `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           amount,
-           metadata,
-           paymentMethod,
-           status: 'completed',
-           liabilityAccepted,
-           timestamp: new Date().toISOString()
-         };
-         
-         this.transactions.set(transaction.id, transaction);
-         
-         // Store transaction
-         await db.query('transactions', 'create', transaction);
-         
-         return {
-           success: true,
-           paymentId: transaction.id,
-           amount,
-           metadata
-         };
-       } catch (error) {
-         console.error('Payment processing error:', error);
-         throw error;
-       }
-     }
-
-     async refund(paymentId, amount, reason) {
-       try {
-         const refund = {
-           id: `refund_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           originalPaymentId: paymentId,
-           amount,
-           reason,
-           status: 'completed',
-           timestamp: new Date().toISOString()
-         };
-         
-         await db.query('refunds', 'create', refund);
-         
-         return {
-           success: true,
-           refundId: refund.id,
-           amount,
-           reason
-         };
-       } catch (error) {
-         console.error('Refund error:', error);
-         throw error;
-       }
-     }
-
-     async addPaymentMethod(userId, method) {
-       const methods = this.paymentMethods.get(userId) || [];
-       methods.push(method);
-       this.paymentMethods.set(userId, methods);
-       return { success: true };
-     }
-   }
-
-   const paymentService = new PaymentService();
-
-   // ============================================================================
-   // ENHANCED AI ANALYSIS SERVICE (combining best from both)
-   // ============================================================================
-   
-   class AIAnalysisService {
-     constructor() {
-       this.analysisCache = new Map();
-       this.modelLoaded = false;
-       this.confidence = 0;
-     }
-
-     async analyzeImage(imageData, description, userContext = {}) {
-       try {
-         const cacheKey = this.generateCacheKey(description, imageData.metadata);
-         const cached = this.analysisCache.get(cacheKey);
-         
-         if (cached && Date.now() - cached.timestamp < 3600000) { // 1 hour cache
-           return cached.analysis;
-         }
-
-         const analysis = await this.performAnalysis(description, imageData, userContext);
-         
-         this.analysisCache.set(cacheKey, {
-           analysis,
-           timestamp: Date.now()
-         });
-         
-         return analysis;
-       } catch (error) {
-         console.error('AI analysis error:', error);
-         return this.fallbackAnalysis(description);
-       }
-     }
-
-     async performAnalysis(description, imageData, userContext) {
-       const keywords = description.toLowerCase();
-       
-       // Enhanced pattern matching with ML-like scoring
-       const patterns = {
-         electrical: {
-           keywords: ['electric', 'socket', 'wire', 'switch', 'fuse', 'circuit', 'power', 'outlet', 'spark', 'breaker', 'voltage', 'amp', 'watt', 'light', 'plug'],
-           severity: 'Critical',
-           baseConfidence: 85,
-           urgency: 'high',
-           diyFriendly: false,
-           category: 'Safety'
-         },
-         plumbing: {
-           keywords: ['leak', 'water', 'pipe', 'tap', 'drain', 'toilet', 'shower', 'sink', 'drip', 'flood', 'pressure', 'valve', 'faucet', 'boiler', 'radiator'],
-           severity: 'High',
-           baseConfidence: 80,
-           urgency: 'medium',
-           diyFriendly: true,
-           category: 'Maintenance'
-         },
-         structural: {
-           keywords: ['wall', 'crack', 'ceiling', 'floor', 'foundation', 'damp', 'mold', 'mould', 'subsidence', 'roof', 'beam', 'joist', 'brick', 'concrete'],
-           severity: 'High',
-           baseConfidence: 75,
-           urgency: 'medium',
-           diyFriendly: false,
-           category: 'Structure'
-         },
-         heating: {
-           keywords: ['heating', 'cold', 'thermostat', 'gas', 'central heating', 'hot water', 'furnace', 'warm', 'temperature', 'hvac', 'boiler', 'radiator'],
-           severity: 'Critical',
-           baseConfidence: 82,
-           urgency: 'high',
-           diyFriendly: false,
-           category: 'Climate'
-         },
-         appliance: {
-           keywords: ['washing machine', 'dishwasher', 'fridge', 'freezer', 'oven', 'microwave', 'dryer', 'cooker', 'appliance', 'machine'],
-           severity: 'Medium',
-           baseConfidence: 78,
-           urgency: 'low',
-           diyFriendly: true,
-           category: 'Appliance'
-         },
-         painting: {
-           keywords: ['paint', 'wall', 'ceiling', 'brush', 'roller', 'color', 'colour', 'finish', 'primer', 'decoration'],
-           severity: 'Low',
-           baseConfidence: 90,
-           urgency: 'low',
-           diyFriendly: true,
-           category: 'Cosmetic'
-         },
-         pest: {
-           keywords: ['mouse', 'rat', 'insect', 'wasp', 'bee', 'ant', 'cockroach', 'pest', 'infestation', 'termite', 'bug'],
-           severity: 'Medium',
-           baseConfidence: 70,
-           urgency: 'medium',
-           diyFriendly: true,
-           category: 'Pest Control'
-         }
-       };
-
-       // Find best matching pattern with weighted scoring
-       let bestMatch = null;
-       let maxScore = 0;
-       let matchedKeywords = [];
-       
-       for (const [type, config] of Object.entries(patterns)) {
-         let score = 0;
-         let typeMatchedKeywords = [];
-         
-         config.keywords.forEach(keyword => {
-           if (keywords.includes(keyword)) {
-             score += 1;
-             typeMatchedKeywords.push(keyword);
-             
-             // Boost score for exact word matches
-             const words = keywords.split(/\s+/);
-             if (words.includes(keyword)) {
-               score += 0.5;
-             }
-           }
-         });
-         
-         // Context-based scoring
-         if (userContext.previousAnalyses) {
-           const similar = userContext.previousAnalyses.filter(a => a.category === type).length;
-           score += similar * 0.1; // Slight boost for similar past issues
-         }
-         
-         if (score > maxScore) {
-           maxScore = score;
-           bestMatch = { type, config };
-           matchedKeywords = typeMatchedKeywords;
-         }
-       }
-
-       this.confidence = bestMatch 
-         ? Math.min(95, bestMatch.config.baseConfidence + (maxScore * 2))
-         : 60;
-
-       const isEmergency = keywords.includes('urgent') || keywords.includes('emergency') || keywords.includes('dangerous');
-       
-       return this.generateComprehensiveAnalysis(bestMatch, keywords, this.confidence, matchedKeywords, isEmergency, imageData, userContext);
-     }
-
-     generateComprehensiveAnalysis(match, keywords, confidence, matchedKeywords, isEmergency, imageData, userContext) {
-       const problemType = match ? match.type : 'general';
-       const config = match ? match.config : {};
-       
-       const analysis = {
-         // Core Analysis
-         id: `analysis_${Date.now()}`,
-         problemDetected: this.getProblemName(problemType),
-         category: config.category || 'General',
-         confidence: confidence + '%',
-         severity: isEmergency ? 'Critical' : (config.severity || 'Medium'),
-         urgency: isEmergency ? 'immediate' : (config.urgency || 'medium'),
-         
-         // Detailed Assessment  
-         description: this.generateDescription(match, isEmergency, confidence),
-         isDIYFriendly: config.diyFriendly && !isEmergency,
-         skillLevel: this.assessSkillLevel(match, isEmergency),
-         riskLevel: this.assessRiskLevel(match, isEmergency),
-         
-         // Cost & Time Estimates
-         estimatedCost: this.estimateCost(match, isEmergency),
-         timeToFix: this.estimateTime(match, isEmergency),
-         laborCost: this.estimateLaborCost(match),
-         materialsCost: this.estimateMaterialsCost(match),
-         
-         // Expert Recommendations
-         recommendedExpertType: this.getExpertType(match),
-         expertUrgency: isEmergency ? 'immediate' : 'standard',
-         
-         // Safety & Compliance
-         safetyWarnings: this.generateSafetyWarnings(match, isEmergency),
-         complianceRequirements: this.getComplianceRequirements(match),
-         insuranceImpact: this.getInsuranceImpact(match),
-         
-         // DIY Information
-         toolsRequired: this.generateToolsList(match),
-         skillsNeeded: this.getRequiredSkills(match),
-         stepByStepGuide: this.generateDIYGuide(match),
-         videoTutorialLinks: this.getVideoTutorials(match),
-         
-         // Parts & Materials
-         recommendedParts: this.generatePartsRecommendations(match),
-         whereToBuy: this.findNearbyStores(userContext.location, match),
-         alternativeProducts: this.getAlternativeProducts(match),
-         
-         // Advanced Features
-         aiConfidenceFactors: this.getConfidenceFactors(matchedKeywords, confidence),
-         similarIssues: this.findSimilarIssues(problemType),
-         seasonalConsiderations: this.getSeasonalFactors(match),
-         preventiveMeasures: this.generatePreventiveTips(match),
-         maintenanceSchedule: this.createMaintenanceSchedule(match),
-         
-         // Smart Features
-         smartHomeIntegration: this.checkSmartHomeCompatibility(match),
-         energyEfficiencyImpact: this.assessEnergyImpact(match),
-         environmentalConsiderations: this.getEnvironmentalImpact(match),
-         
-         // Follow-up Actions
-         followUpRequired: this.determineFollowUp(match, isEmergency),
-         warrantyInformation: this.checkWarrantyIssues(match),
-         nextSteps: this.generateNextSteps(match, isEmergency),
-         
-         // Metadata
-         timestamp: new Date().toISOString(),
-         analysisVersion: '3.0',
-         mediaAnalyzed: {
-           type: imageData.type,
-           size: imageData.metadata ? imageData.metadata.size : 0,
-           analyzed: true
-         }
-       };
-
-       return analysis;
-     }
-
-     getProblemName(type) {
-       const names = {
-         electrical: 'Electrical System Issue',
-         plumbing: 'Plumbing & Water System',
-         structural: 'Structural & Building Issue',
-         heating: 'Heating & Climate Control',
-         appliance: 'Appliance Malfunction',
-         painting: 'Painting & Decoration',
-         pest: 'Pest Control Issue'
-       };
-       return names[type] || 'General Maintenance Issue';
-     }
-
-     generateDescription(match, isEmergency, confidence) {
-       if (!match) {
-         return 'General maintenance issue detected. A professional assessment is recommended to identify the specific problem and determine the best course of action.';
-       }
-
-       const urgencyText = isEmergency 
-         ? 'This appears to be an urgent issue requiring immediate professional attention. ' 
-         : '';
-
-       const confidenceText = confidence > 85 
-         ? 'High-confidence analysis indicates ' 
-         : confidence > 70 
-         ? 'Analysis suggests ' 
-         : 'Preliminary assessment indicates ';
-
-       const problemType = this.getProblemName(match.type).toLowerCase();
-       
-       return `${urgencyText}${confidenceText}this is a ${problemType}. ${match.config.diyFriendly && !isEmergency ? 'This may be suitable for DIY repair with proper precautions.' : 'Professional expertise is strongly recommended for safe and effective resolution.'}`;
-     }
-
-     estimateCost(match, isEmergency) {
-       const baseCosts = {
-         electrical: { min: 100, max: 400, premium: 150 },
-         plumbing: { min: 80, max: 250, premium: 120 },
-         structural: { min: 200, max: 800, premium: 300 },
-         heating: { min: 150, max: 500, premium: 200 },
-         appliance: { min: 60, max: 200, premium: 90 },
-         painting: { min: 30, max: 150, premium: 50 },
-         pest: { min: 80, max: 300, premium: 120 }
-       };
-
-       const costs = match ? baseCosts[match.type] : { min: 50, max: 200, premium: 75 };
-       const multiplier = isEmergency ? 1.5 : 1;
-
-       return {
-         range: `£${Math.round(costs.min * multiplier)}-£${Math.round(costs.max * multiplier)}`,
-         diy: `£${Math.round(costs.min * 0.3)}-£${Math.round(costs.max * 0.3)}`,
-         professional: `£${Math.round(costs.premium * multiplier)}-£${Math.round(costs.max * multiplier)}`
-       };
-     }
-
-     estimateTime(match, isEmergency) {
-       const times = {
-         electrical: { diy: '2-4 hours', professional: '1-2 hours' },
-         plumbing: { diy: '1-3 hours', professional: '30min-1 hour' },
-         structural: { diy: 'Not recommended', professional: '4-8 hours' },
-         heating: { diy: 'Not recommended', professional: '2-4 hours' },
-         appliance: { diy: '30min-2 hours', professional: '1 hour' },
-         painting: { diy: '2-6 hours', professional: '1-3 hours' },
-         pest: { diy: '1-2 hours', professional: '30min-1 hour' }
-       };
-
-       const timeEstimate = match ? times[match.type] : { diy: '1-3 hours', professional: '1-2 hours' };
-       return isEmergency ? 'Immediate attention required' : timeEstimate;
-     }
-
-     generateSafetyWarnings(match, isEmergency) {
-       const baseWarnings = [];
-
-       if (isEmergency) {
-         baseWarnings.push('🚨 IMMEDIATE ACTION REQUIRED');
-         baseWarnings.push('⚠️ Ensure safety of all occupants');
-         baseWarnings.push('📞 Contact emergency services if life-threatening');
-       }
-
-       if (!match) {
-         return [...baseWarnings, '⚡ Exercise general caution', '🧤 Use appropriate safety equipment'];
-       }
-
-       const specificWarnings = {
-         electrical: [
-           '⚡ Turn off power at circuit breaker before inspection',
-           '☠️ DANGER: Risk of electrocution - never work on live circuits',
-           '🧤 Use insulated tools only',
-           '💧 Keep area completely dry',
-           '📞 Call emergency electrician for sparking or burning smells'
-         ],
-         plumbing: [
-           '💧 Turn off water supply at stopcock immediately',
-           '⚡ Check for electrical hazards near water',
-           '🪣 Have containers ready for water collection',
-           '🧤 Wear protective gloves',
-           '🔧 Use proper pipe wrenches to avoid damage'
-         ],
-         structural: [
-           '🏠 Do not ignore structural cracks or movement',
-           '⚠️ Evacuate immediately if severe damage suspected',
-           '📸 Document all damage with photos',
-           '🚫 Do not attempt structural repairs yourself',
-           '🏗️ Consult structural engineer for assessment'
-         ],
-         heating: [
-           '🔥 If you smell gas: evacuate immediately, no switches/flames',
-           '🪟 Ventilate area by opening doors and windows',
-           '📞 Call Gas Emergency Hotline: 0800 111 999',
-           '🚭 Absolutely no naked flames or smoking',
-           '❄️ Never block ventilation or flues'
-         ],
-         appliance: [
-           '🔌 Unplug appliance before any inspection',
-           '⚠️ Check warranty status before repairs',
-           '📖 Consult manufacturer's manual',
-           '🧊 Allow hot appliances to cool completely',
-           '💧 Keep electrical parts dry'
-         ],
-         painting: [
-           '🪟 Ensure adequate ventilation',
-           '🧤 Wear protective equipment',
-           '👁️ Use eye protection when scraping',
-           '🚫 Test for lead paint in older properties',
-           '🔥 Keep away from heat sources'
-         ],
-         pest: [
-           '🧤 Wear protective gloves and clothing',
-           '🚫 Avoid direct contact with pests or droppings',
-           '🧹 Clean and disinfect affected areas',
-           '🏥 Seek medical attention if bitten or stung',
-           '🔍 Inspect for structural damage caused by pests'
-         ]
-       };
-
-       return [...baseWarnings, ...(specificWarnings[match.type] || [])];
-     }
-
-     generatePartsRecommendations(match) {
-       const partsDatabase = {
-         electrical: [
-           { name: 'Digital Multimeter', price: 25.99, priority: 'Essential', store: 'Screwfix' },
-           { name: 'Wire Connector Set', price: 8.99, priority: 'Essential', store: 'B&Q' },
-           { name: 'Electrical Tape', price: 3.49, priority: 'Essential', store: 'Any' },
-           { name: 'Circuit Breaker', price: 15.99, priority: 'Specific', store: 'Electrical Supplier' },
-           { name: 'Cable Detector', price: 34.99, priority: 'Recommended', store: 'Toolstation' }
-         ],
-         plumbing: [
-           { name: 'Pipe Repair Clamp', price: 12.99, priority: 'Essential', store: 'Plumbers Merchant' },
-           { name: 'PTFE Tape', price: 2.49, priority: 'Essential', store: 'Any DIY Store' },
-           { name: 'Adjustable Wrench Set', price: 18.99, priority: 'Essential', store: 'B&Q' },
-           { name: 'Pipe Cutter', price: 24.99, priority: 'Recommended', store: 'Screwfix' },
-           { name: 'Leak Detection Fluid', price: 6.99, priority: 'Useful', store: 'Online' }
-         ],
-         heating: [
-           { name: 'Digital Thermometer', price: 15.99, priority: 'Essential', store: 'Amazon' },
-           { name: 'Radiator Bleed Key', price: 2.99, priority: 'Essential', store: 'Any DIY Store' },
-           { name: 'Pipe Insulation', price: 12.99, priority: 'Recommended', store: 'Wickes' },
-           { name: 'TRV Head', price: 18.99, priority: 'Specific', store: 'Plumbers Merchant' }
-         ],
-         appliance: [
-           { name: 'Appliance Cleaner', price: 6.99, priority: 'Essential', store: 'Supermarket' },
-           { name: 'Replacement Filters', price: 14.99, priority: 'Specific', store: 'Manufacturer' },
-           { name: 'Appliance Diagnostic Tool', price: 45.99, priority: 'Professional', store: 'Specialist' }
-         ],
-         painting: [
-           { name: 'Quality Brushes Set', price: 29.99, priority: 'Essential', store: 'Dulux Store' },
-           { name: 'Primer/Undercoat', price: 22.99, priority: 'Essential', store: 'B&Q' },
-           { name: 'Drop Cloths', price: 8.99, priority: 'Essential', store: 'Any DIY Store' },
-           { name: 'Paint Samples', price: 0.99, priority: 'Recommended', store: 'Paint Shop' }
-         ],
-         pest: [
-           { name: 'Humane Traps', price: 12.99, priority: 'Essential', store: 'Garden Centre' },
-           { name: 'Pest Spray', price: 9.99, priority: 'Essential', store: 'Hardware Store' },
-           { name: 'Sealant/Filler', price: 7.99, priority: 'Recommended', store: 'B&Q' }
-         ]
-       };
-
-       return match ? partsDatabase[match.type] || [] : [];
-     }
-
-     generateCacheKey(description, metadata) {
-       const key = description.toLowerCase().replace(/[^a-z0-9]/g, '');
-       const size = metadata ? metadata.size : 0;
-       return `${key}_${size}`;
-     }
-
-     // Additional helper methods for comprehensive analysis
-     assessSkillLevel(match, isEmergency) {
-       if (isEmergency || !match) return 'Professional Required';
-       
-       const levels = {
-         electrical: 'Professional Only',
-         plumbing: 'Intermediate to Advanced',
-         structural: 'Professional Only',
-         heating: 'Professional Only',
-         appliance: 'Beginner to Intermediate',
-         painting: 'Beginner',
-         pest: 'Beginner to Intermediate'
-       };
-
-       return levels[match.type] || 'Intermediate';
-     }
-
-     assessRiskLevel(match, isEmergency) {
-       if (isEmergency) return 'High';
-       
-       const levels = {
-         electrical: 'High',
-         plumbing: 'Medium',
-         structural: 'High',
-         heating: 'High',
-         appliance: 'Low',
-         painting: 'Low',
-         pest: 'Medium'
-       };
-
-       return levels[match ? match.type : 'general'] || 'Medium';
-     }
-
-     estimateLaborCost(match) {
-       const rates = {
-         electrical: { min: 40, max: 80 },
-         plumbing: { min: 35, max: 65 },
-         structural: { min: 50, max: 100 },
-         heating: { min: 45, max: 85 },
-         appliance: { min: 30, max: 60 },
-         painting: { min: 25, max: 45 },
-         pest: { min: 35, max: 70 }
-       };
-
-       const rate = match ? rates[match.type] : { min: 30, max: 60 };
-       return `£${rate.min}-£${rate.max}/hour`;
-     }
-
-     estimateMaterialsCost(match) {
-       const materials = {
-         electrical: { min: 20, max: 150 },
-         plumbing: { min: 15, max: 100 },
-         structural: { min: 50, max: 300 },
-         heating: { min: 30, max: 200 },
-         appliance: { min: 25, max: 120 },
-         painting: { min: 20, max: 80 },
-         pest: { min: 15, max: 60 }
-       };
-
-       const cost = match ? materials[match.type] : { min: 20, max: 100 };
-       return `£${cost.min}-£${cost.max}`;
-     }
-
-     getExpertType(match) {
-       const experts = {
-         electrical: 'Certified Electrician',
-         plumbing: 'Licensed Plumber', 
-         structural: 'Structural Engineer',
-         heating: 'Gas Safe Engineer',
-         appliance: 'Appliance Technician',
-         painting: 'Professional Decorator',
-         pest: 'Pest Control Specialist'
-       };
-
-       return match ? experts[match.type] : 'General Handyman';
-     }
-
-     getComplianceRequirements(match) {
-       const requirements = {
-         electrical: 'Must comply with BS 7671 wiring regulations',
-         plumbing: 'Must meet Water Supply Regulations',
-         structural: 'Building regulations approval may be required',
-         heating: 'Gas Safe registration required for gas work',
-         appliance: 'Check warranty and safety standards',
-         painting: 'Consider lead paint regulations in older properties',
-         pest: 'Use approved pesticides only'
-       };
-
-       return match ? requirements[match.type] : 'Follow general safety guidelines';
-     }
-
-     getInsuranceImpact(match) {
-       const impact = {
-         electrical: 'Electrical faults may be covered under buildings insurance',
-         plumbing: 'Water damage typically covered, pipe repairs may not be',
-         structural: 'Structural issues usually covered under buildings insurance',
-         heating: 'Boiler breakdown may be covered by specific policies',
-         appliance: 'Check appliance warranty and home contents insurance',
-         painting: 'Cosmetic work typically not covered',
-         pest: 'Pest damage rarely covered by standard policies'
-       };
-
-       return match ? impact[match.type] : 'Check your insurance policy for coverage';
-     }
-
-     generateToolsList(match) {
-       const tools = {
-         electrical: [
-           { name: 'Insulated Screwdrivers', essential: true, price: '£15-25' },
-           { name: 'Voltage Tester', essential: true, price: '£20-35' },
-           { name: 'Wire Strippers', essential: true, price: '£12-20' },
-           { name: 'Electrical Pliers', essential: false, price: '£18-30' }
-         ],
-         plumbing: [
-           { name: 'Adjustable Wrench', essential: true, price: '£10-20' },
-           { name: 'Pipe Wrench', essential: true, price: '£15-25' },
-           { name: 'Plunger', essential: true, price: '£8-15' },
-           { name: 'Pipe Cutter', essential: false, price: '£20-40' }
-         ],
-         painting: [
-           { name: 'Quality Brushes', essential: true, price: '£15-30' },
-           { name: 'Paint Roller & Tray', essential: true, price: '£10-20' },
-           { name: 'Dust Sheets', essential: true, price: '£5-15' },
-           { name: 'Ladder/Steps', essential: true, price: '£40-80' }
-         ]
-       };
-
-       return match ? tools[match.type] || [] : [];
-     }
-
-     getRequiredSkills(match) {
-       const skills = {
-         electrical: ['Circuit analysis', 'Safety procedures', 'Regulation knowledge'],
-         plumbing: ['Pipe fitting', 'Leak detection', 'Water system knowledge'],
-         structural: ['Building assessment', 'Load calculations', 'Material knowledge'],
-         heating: ['Gas safety', 'System diagnostics', 'Pressure testing'],
-         appliance: ['Troubleshooting', 'Component replacement', 'Manual reading'],
-         painting: ['Surface preparation', 'Color matching', 'Application techniques'],
-         pest: ['Identification', 'Treatment methods', 'Prevention strategies']
-       };
-
-       return match ? skills[match.type] || [] : ['General maintenance skills'];
-     }
-
-     generateDIYGuide(match) {
-       if (!match || !this.assessDIYSafety(match, false)) {
-         return ['Professional expertise required for safety'];
-       }
-
-       const guides = {
-         plumbing: [
-           '1. 🚰 Turn off water supply at stopcock',
-           '2. 📸 Document the issue with photos',
-           '3. 🪣 Place buckets under work area',
-           '4. 🔍 Identify leak source',
-           '5. 🧹 Clean and dry area',
-           '6. 🔧 Apply temporary fix if safe',
-           '7. 📞 Call expert if beyond basic repair'
-         ],
-         appliance: [
-           '1. 🔌 Disconnect from power',
-           '2. 📖 Check user manual',
-           '3. 🔍 Inspect for obvious issues',
-           '4. 🧹 Clean filters/vents',
-           '5. 🔄 Reset if applicable',
-           '6. 🧪 Test functionality',
-           '7. 📞 Contact manufacturer if under warranty'
-         ],
-         painting: [
-           '1. 🧹 Prepare surface thoroughly',
-           '2. 🎨 Choose appropriate primer',
-           '3. 🖌️ Apply primer evenly',
-           '4. ⏰ Allow proper drying time',
-           '5. 🎨 Apply paint in thin coats',
-           '6. 🔄 Sand lightly between coats',
-           '7. ✨ Apply final protective coat'
-         ],
-         pest: [
-           '1. 🔍 Identify pest type',
-           '2. 🧹 Remove food sources',
-           '3. 🚪 Seal entry points',
-           '4. 🪤 Set appropriate traps',
-           '5. 🧼 Deep clean affected areas',
-           '6. 📊 Monitor activity',
-           '7. 📞 Call specialist if persistent'
-         ]
-       };
-
-       return guides[match.type] || ['Professional assessment recommended'];
-     }
-
-     assessDIYSafety(match, isEmergency) {
-       if (isEmergency) return false;
-       if (!match) return true;
-       
-       const nonDIYTypes = ['electrical', 'heating', 'structural'];
-       return !nonDIYTypes.includes(match.type);
-     }
-
-     getVideoTutorials(match) {
-       // In production, these would be real video links
-       const tutorials = {
-         plumbing: [
-           { title: 'Basic Pipe Repair', url: '#', duration: '5 min' },
-           { title: 'Fixing Dripping Taps', url: '#', duration: '8 min' }
-         ],
-         appliance: [
-           { title: 'Appliance Troubleshooting', url: '#', duration: '10 min' },
-           { title: 'Cleaning and Maintenance', url: '#', duration: '6 min' }
-         ],
-         painting: [
-           { title: 'Professional Painting Techniques', url: '#', duration: '15 min' },
-           { title: 'Surface Preparation', url: '#', duration: '12 min' }
-         ]
-       };
-
-       return match ? tutorials[match.type] || [] : [];
-     }
-
-     findNearbyStores(location, match) {
-       // Return stores from our database
-       return partsStores.get('london') || [];
-     }
-
-     getAlternativeProducts(match) {
-       const alternatives = {
-         electrical: ['LED alternatives', 'Smart switches', 'Energy-efficient options'],
-         plumbing: ['Eco-friendly pipes', 'Water-saving fixtures', 'Modern alternatives'],
-         heating: ['Smart thermostats', 'Energy-efficient boilers', 'Heat pumps'],
-         appliance: ['Energy-efficient models', 'Smart appliances', 'Refurbished options']
-       };
-
-       return match ? alternatives[match.type] || [] : [];
-     }
-
-     getConfidenceFactors(matchedKeywords, confidence) {
-       return {
-         keywordMatches: matchedKeywords.length,
-         patternRecognition: confidence > 80 ? 'High' : confidence > 60 ? 'Medium' : 'Low',
-         imageAnalysis: 'Basic pattern matching',
-         contextualFactors: 'User history considered'
-       };
-     }
-
-     findSimilarIssues(problemType) {
-       const similar = {
-         electrical: ['Power outages', 'Circuit overloads', 'Faulty wiring'],
-         plumbing: ['Pipe blockages', 'Water pressure issues', 'Heating problems'],
-         structural: ['Foundation issues', 'Roof problems', 'Wall cracks'],
-         heating: ['Boiler breakdowns', 'Radiator issues', 'Thermostat problems']
-       };
-
-       return similar[problemType] || ['General maintenance issues'];
-     }
-
-     getSeasonalFactors(match) {
-       const seasonal = {
-         heating: 'More urgent in winter months',
-         plumbing: 'Frozen pipes risk in winter',
-         pest: 'Increased activity in warmer months',
-         structural: 'Weather damage more common in winter'
-       };
-
-       return match ? seasonal[match.type] || 'No seasonal considerations' : 'Consider weather conditions';
-     }
-
-     generatePreventiveTips(match) {
-       const tips = {
-         electrical: [
-           '🔍 Annual electrical safety inspection',
-           '⚡ Test RCD switches monthly',
-           '🔌 Replace damaged plugs immediately',
-           '💡 Use LED bulbs to reduce heat',
-           '📊 Monitor unusual electrical bills'
-         ],
-         plumbing: [
-           '💧 Check for leaks monthly',
-           '🚿 Clean showerheads quarterly', 
-           '🌡️ Monitor water pressure',
-           '❄️ Insulate pipes before winter',
-           '🔧 Service boiler annually'
-         ],
-         heating: [
-           '🔥 Annual boiler service essential',
-           '🌡️ Bleed radiators seasonally',
-           '🚨 Test CO detectors monthly',
-           '🔄 Replace heating filters regularly',
-           '📊 Track energy usage patterns'
-         ],
-         appliance: [
-           '🧹 Regular cleaning schedule',
-           '📖 Follow maintenance guide',
-           '🔄 Don\'t overload',
-           '⚡ Check power cords',
-           '📅 Professional service annually'
-         ]
-       };
-
-       return match ? tips[match.type] || [] : [];
-     }
-
-     createMaintenanceSchedule(match) {
-       const schedules = {
-         plumbing: {
-           monthly: ['Check for leaks', 'Test water pressure'],
-           quarterly: ['Clean aerators', 'Check under sinks'],
-           annually: ['Service boiler', 'Inspect all pipes']
-         },
-         electrical: {
-           monthly: ['Test RCD', 'Check outlets'],
-           quarterly: ['Inspect visible wiring'],
-           annually: ['Professional inspection']
-         },
-         heating: {
-           monthly: ['Check pressure', 'Test controls'],
-           seasonally: ['Bleed radiators', 'Check filters'],
-           annually: ['Full service', 'Safety check']
-         }
-       };
-
-       return match ? schedules[match.type] || {} : {};
-     }
-
-     checkSmartHomeCompatibility(match) {
-       const compatibility = {
-         electrical: {
-           compatible: true,
-           suggestions: ['Smart switches', 'Smart outlets', 'Energy monitoring']
-         },
-         heating: {
-           compatible: true,
-           suggestions: ['Smart thermostat', 'Smart TRVs', 'Zone control']
-         },
-         plumbing: {
-           compatible: true,
-           suggestions: ['Leak detectors', 'Smart water shut-off', 'Usage monitors']
-         },
-         appliance: {
-           compatible: true,
-           suggestions: ['Smart plugs', 'Energy monitoring', 'Remote control']
-         }
-       };
-
-       return match ? compatibility[match.type] || { compatible: false, suggestions: [] } : { compatible: false, suggestions: [] };
-     }
-
-     assessEnergyImpact(match) {
-       const impacts = {
-         electrical: 'High potential for energy savings',
-         heating: 'Significant energy efficiency improvements possible',
-         appliance: 'Modern appliances can reduce energy consumption',
-         plumbing: 'Water heating efficiency improvements available'
-       };
-
-       return match ? impacts[match.type] || 'Minimal energy impact' : 'Consider energy efficiency';
-     }
-
-     getEnvironmentalImpact(match) {
-       const impacts = {
-         electrical: 'LED upgrades reduce environmental impact',
-         heating: 'Efficient heating reduces carbon footprint',
-         plumbing: 'Water conservation has environmental benefits',
-         appliance: 'Energy-efficient appliances help environment'
-       };
-
-       return match ? impacts[match.type] || 'Consider eco-friendly options' : 'Choose sustainable solutions';
-     }
-
-     determineFollowUp(match, isEmergency) {
-       if (isEmergency) return 'Immediate professional follow-up required';
-       
-       const followUps = {
-         electrical: 'Annual safety inspection recommended',
-         plumbing: 'Monitor for recurring issues',
-         heating: 'Schedule annual service',
-         structural: 'Monitor for changes over time'
-       };
-
-       return match ? followUps[match.type] || 'Monitor situation' : 'Follow up as needed';
-     }
-
-     checkWarrantyIssues(match) {
-       return {
-         warning: 'DIY repairs may void warranties',
-         advice: 'Check warranty terms before attempting repairs',
-         covered: match && match.type === 'appliance' ? 'Possibly' : 'Unlikely'
-       };
-     }
-
-     generateNextSteps(match, isEmergency) {
-       if (isEmergency) {
-         return [
-           'Ensure immediate safety',
-           'Contact emergency services if needed',
-           'Call emergency expert',
-           'Document everything for insurance'
-         ];
-       }
-
-       const steps = {
-         electrical: [
-           'Turn off power if unsafe',
-           'Contact certified electrician',
-           'Do not attempt DIY electrical work',
-           'Schedule safety inspection'
-         ],
-         plumbing: [
-           'Turn off water if major leak',
-           'Take photos for records',
-           'Get quotes from plumbers',
-           'Consider temporary fixes if safe'
-         ],
-         heating: [
-           'Check boiler manual',
-           'Contact Gas Safe engineer',
-           'Consider temporary heating',
-           'Schedule annual service'
-         ]
-       };
-
-       return match ? steps[match.type] || ['Assess situation', 'Get professional advice'] : ['Monitor and assess'];
-     }
-
-     fallbackAnalysis(description) {
-       return {
-         problemDetected: 'General Maintenance Issue',
-         confidence: '60%',
-         severity: 'Medium',
-         description: 'Unable to perform detailed analysis. Please ensure good lighting and clear description for better results.',
-         isDIYFriendly: false,
-         estimatedCost: { range: '£50-£200', diy: '£15-£60', professional: '£75-£200' },
-         timeToFix: { diy: '1-4 hours', professional: '1-2 hours' },
-         recommendedExpertType: 'General Handyman',
-         safetyWarnings: ['⚠️ Use appropriate safety equipment', '📞 Consult professional if unsure'],
-         recommendedParts: [],
-         timestamp: new Date().toISOString(),
-         analysisVersion: '3.0'
-       };
-     }
-   }
-
-   const aiService = new AIAnalysisService();
-
-   // ============================================================================
-   // ENHANCED EMAIL SERVICE (from newer version)
-   // ============================================================================
-   
-   class EmailService {
-     constructor() {
-       this.templates = {
-         welcome: (user) => ({
-           subject: 'Welcome to DIYMatch! 🔧',
-           html: `
-             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-               <h2 style="color: #2563eb;">Welcome ${user.name}!</h2>
-               <p>Thank you for joining DIYMatch, your AI-powered DIY assistant.</p>
-               <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                 <h3>What you can do now:</h3>
-                 <ul>
-                   <li>🤖 Get your first AI analysis FREE this month</li>
-                   <li>👨‍🔧 Connect with verified local experts</li>
-                   <li>🛠️ Find parts at nearby stores</li>
-                   <li>💰 Share your referral code: <strong>${user.referralCode}</strong></li>
-                 </ul>
-               </div>
-               <p>Need help? Reply to this email or call ${APP_CONFIG.emergencyHotline}</p>
-             </div>
-           `,
-           text: `Welcome ${user.name}! Thank you for joining DIYMatch.`
-         }),
-         
-         bookingConfirmation: (booking, user, expert) => ({
-           subject: `Booking Confirmed - ${expert.name} on ${new Date(booking.date).toLocaleDateString()}`,
-           html: `
-             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-               <h2 style="color: #2563eb;">Booking Confirmation</h2>
-               <div class="liability-waiver">
-                 <div class="liability-waiver-header">
-                   ⚠️ Important Legal Notice
-                 </div>
-                 <div class="liability-waiver-text">
-                   DIYMatch connects you with independent contractors. We are not responsible for their work quality, safety practices, or outcomes. You engage experts at your own risk.
-                 </div>
-               </div>
-               <div style="border: 2px solid #e5e7eb; padding: 20px; border-radius: 8px;">
-                 <h3>📅 Appointment Details</h3>
-                 <p><strong>Expert:</strong> ${expert.name} (${expert.profession})</p>
-                 <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
-                 <p><strong>Time:</strong> ${booking.time}</p>
-                 <p><strong>Location:</strong> ${booking.location || user.postcode}</p>
-                 <p><strong>Estimated Duration:</strong> ${booking.estimatedDuration}</p>
-                 <p><strong>Total Cost:</strong> £${booking.totalCost}</p>
-               </div>
-               <p style="margin-top: 20px;">The expert will contact you before arrival.</p>
-             </div>
-           `,
-           text: `Booking confirmed with ${expert.name} on ${new Date(booking.date).toLocaleDateString()}`
-         }),
-         
-         analysisComplete: (analysis, user) => ({
-           subject: `Your DIY Analysis is Ready! - ${analysis.problemDetected}`,
-           html: `
-             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-               <h2 style="color: #2563eb;">AI Analysis Complete</h2>
-               <div style="background: #f3f4f6; padding: 20px; border-radius: 8px;">
-                 <h3>Problem Detected: ${analysis.problemDetected}</h3>
-                 <p><strong>Severity:</strong> ${analysis.severity}</p>
-                 <p><strong>Estimated Cost:</strong> ${analysis.estimatedCost.range || analysis.estimatedCost}</p>
-                 <p><strong>DIY Friendly:</strong> ${analysis.isDIYFriendly ? 'Yes' : 'No - Professional Required'}</p>
-               </div>
-               <p style="margin-top: 20px;">
-                 <a href="#" style="background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
-                   View Full Analysis
-                 </a>
-               </p>
-             </div>
-           `,
-           text: `AI Analysis complete: ${analysis.problemDetected}`
-         })
-       };
-     }
-
-     async send(to, template, data) {
-       try {
-         const emailContent = typeof template === 'string' 
-           ? this.templates[template](data)
-           : template;
-         
-         console.log('Email sent:', { to, ...emailContent });
-         
-         // Store email record
-         await db.query('emails', 'create', {
-           to,
-           ...emailContent,
-           sentAt: new Date().toISOString()
-         });
-         
-         return { success: true };
-       } catch (error) {
-         console.error('Email service error:', error);
-         return { success: false, error: error.message };
-       }
-     }
-
-     async sendBulk(recipients, template, data) {
-       const results = await Promise.all(
-         recipients.map(to => this.send(to, template, data))
-       );
-       return results;
-     }
-   }
-
-   const emailService = new EmailService();
-
-   // ============================================================================
-   // ENHANCED NOTIFICATION SERVICE (from newer version)
-   // ============================================================================
-
-   class NotificationService {
-     constructor() {
-       this.permission = 'default';
-       this.checkPermission();
-     }
-
-     async checkPermission() {
-       if ('Notification' in window) {
-         this.permission = Notification.permission;
-         if (this.permission === 'default') {
-           this.permission = await Notification.requestPermission();
-         }
-       }
-     }
-
-     async send(title, options = {}) {
-       if (this.permission === 'granted') {
-         const notification = new Notification(title, {
-           icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">🔧</text></svg>',
-           badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">🔧</text></svg>',
-           ...options
-         });
-
-         notification.onclick = () => {
-           window.focus();
-           notification.close();
-         };
-
-         return notification;
-       }
-     }
-
-     async sendPush(userId, notification) {
-       if (!userNotifications.has(userId)) {
-         userNotifications.set(userId, []);
-       }
-       
-       const notificationData = {
-         id: `notif_${Date.now()}`,
-         ...notification,
-         timestamp: new Date().toISOString(),
-         read: false
-       };
-       
-       userNotifications.get(userId).push(notificationData);
-       
-       // Show browser notification if user is logged in
-       const currentUser = getCurrentUser();
-       if (currentUser && currentUser.id === userId) {
-         await this.send(notification.title, {
-           body: notification.body,
-           tag: notificationData.id
-         });
-       }
-       
-       return notificationData;
-     }
-   }
-
-   const notificationService = new NotificationService();
-
-   // ============================================================================
-   // ENHANCED ANALYTICS SERVICE (from newer version)
-   // ============================================================================
-
-   class AnalyticsService {
-     constructor() {
-       this.events = [];
-       this.sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-       this.userId = null;
-     }
-
-     setUser(userId) {
-       this.userId = userId;
-     }
-
-     track(eventName, parameters = {}) {
-       const event = {
-         name: eventName,
-         parameters,
-         timestamp: new Date().toISOString(),
-         sessionId: this.sessionId,
-         userId: this.userId
-       };
-       
-       this.events.push(event);
-       console.log('Analytics event:', event);
-       
-       // Store in IndexedDB
-       db.query('analytics', 'create', event);
-     }
-
-     trackPageView(pageName) {
-       this.track('page_view', { page_name: pageName });
-     }
-
-     trackUserAction(action, category, label, value) {
-       this.track(action, {
-         event_category: category,
-         event_label: label,
-         value: value
-       });
-     }
-
-     trackError(error, fatal = false) {
-       this.track('exception', {
-         description: error.message || error,
-         fatal: fatal
-       });
-     }
-
-     trackConversion(type, value) {
-       this.track('conversion', {
-         conversion_type: type,
-         value: value,
-         currency: 'GBP'
-       });
-     }
-
-     getAnalytics() {
-       const sessions = this.events.reduce((acc, event) => {
-         if (!acc[event.sessionId]) {
-           acc[event.sessionId] = [];
-         }
-         acc[event.sessionId].push(event);
-         return acc;
-       }, {});
-
-       return {
-         totalEvents: this.events.length,
-         uniqueSessions: Object.keys(sessions).length,
-         eventTypes: [...new Set(this.events.map(e => e.name))],
-         sessions
-       };
-     }
-   }
-
-   const analytics = new AnalyticsService();
-
-   // ============================================================================
-   // ENHANCED UTILITY FUNCTIONS (combining best from both)
-   // ============================================================================
-
    let currentUser = null;
-
-   const getCurrentUser = () => currentUser;
-   const setCurrentUser = (user) => {
-     currentUser = user;
-     if (user) {
-       analytics.setUser(user.id);
-       localStorage.setItem('diymatch_user', JSON.stringify(user));
-     } else {
-       localStorage.removeItem('diymatch_user');
-     }
-   };
-
+   
    const triggerHaptic = (type = 'light') => {
      if ('vibrate' in navigator) {
        const patterns = {
@@ -2287,177 +460,10 @@
          medium: 100,
          heavy: 200,
          success: [50, 100, 50],
-         error: [100, 50, 100, 50, 100],
-         warning: [200, 100, 200],
-         notification: [50, 50, 50],
-         double: [50, 50, 50],
-         long: 500
+         error: [100, 50, 100, 50, 100]
        };
        navigator.vibrate(patterns[type] || 50);
      }
-   };
-
-   // Enhanced media capture with document support
-   const captureMedia = (type = 'photo') => {
-     return new Promise((resolve, reject) => {
-       const input = document.createElement('input');
-       input.type = 'file';
-       
-       switch (type) {
-         case 'photo':
-           input.accept = 'image/*';
-           input.capture = 'environment';
-           break;
-         case 'video':
-           input.accept = 'video/*';
-           input.capture = 'environment';
-           break;
-         case 'cv':
-           input.accept = 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-           break;
-         case 'certificate':
-           input.accept = 'image/*,application/pdf';
-           input.multiple = true;
-           break;
-         case 'document':
-           input.accept = 'image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-           break;
-         case 'any':
-           input.accept = APP_CONFIG.supportedFileTypes.join(',');
-           break;
-       }
-       
-       input.onchange = (e) => {
-         const files = Array.from(e.target.files);
-         if (files.length === 0) {
-           reject(new Error('No file selected'));
-           return;
-         }
-
-         const processFiles = async () => {
-           const results = [];
-           
-           for (const file of files) {
-             if (file.size > APP_CONFIG.maxFileSize) {
-               reject(new Error(`File too large. Maximum size is ${APP_CONFIG.maxFileSize / 1024 / 1024}MB`));
-               return;
-             }
-             
-             const reader = new FileReader();
-             const result = await new Promise((resolve, reject) => {
-               reader.onload = (event) => resolve({ 
-                 type: file.type.startsWith('image/') ? 'image' : 
-                       file.type.startsWith('video/') ? 'video' : 'document',
-                 data: event.target.result, 
-                 file,
-                 metadata: {
-                   name: file.name,
-                   size: file.size,
-                   type: file.type,
-                   lastModified: file.lastModified
-                 }
-               });
-               reader.onerror = () => reject(new Error('Failed to read file'));
-               reader.readAsDataURL(file);
-             });
-             
-             results.push(result);
-           }
-           
-           return input.multiple ? results : results[0];
-         };
-         
-         processFiles().then(resolve).catch(reject);
-       };
-       
-       input.click();
-     });
-   };
-
-   const takePhoto = () => captureMedia('photo');
-   const takeVideo = () => captureMedia('video');
-
-   const recordVoiceNote = () => {
-     return new Promise(async (resolve) => {
-       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-         alert('Voice recording not supported on this device');
-         resolve(null);
-         return;
-       }
-
-       try {
-         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-         const mediaRecorder = new MediaRecorder(stream);
-         const chunks = [];
-         
-         mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-         
-         mediaRecorder.onstop = () => {
-           const blob = new Blob(chunks, { type: 'audio/webm' });
-           const reader = new FileReader();
-           
-           reader.onload = (event) => {
-             resolve({
-               type: 'voice',
-               data: event.target.result,
-               duration: chunks.length,
-               timestamp: new Date().toISOString()
-             });
-           };
-           
-           reader.readAsDataURL(blob);
-           stream.getTracks().forEach(track => track.stop());
-         };
-         
-         // Start recording
-         mediaRecorder.start();
-         
-         // Stop after 30 seconds max
-         setTimeout(() => {
-           if (mediaRecorder.state === 'recording') {
-             mediaRecorder.stop();
-           }
-         }, 30000);
-         
-         // Add UI for stopping recording
-         const stopButton = confirm('Recording... Click OK to stop');
-         if (stopButton || true) {
-           mediaRecorder.stop();
-         }
-       } catch (error) {
-         console.error('Voice recording error:', error);
-         alert('Failed to access microphone');
-         resolve(null);
-       }
-     });
-   };
-
-   const getUserLocation = async () => {
-     return new Promise((resolve) => {
-       if ('geolocation' in navigator) {
-         navigator.geolocation.getCurrentPosition(
-           (position) => {
-             resolve({
-               latitude: position.coords.latitude,
-               longitude: position.coords.longitude,
-               accuracy: position.coords.accuracy,
-               timestamp: position.timestamp
-             });
-           },
-           (error) => {
-             console.error('Location error:', error);
-             resolve({ error: error.message });
-           },
-           {
-             enableHighAccuracy: true,
-             timeout: 10000,
-             maximumAge: 300000 // 5 minutes
-           }
-         );
-       } else {
-         resolve({ error: 'Geolocation not supported' });
-       }
-     });
    };
 
    const formatCurrency = (amount) => {
@@ -2467,1528 +473,741 @@
      }).format(amount);
    };
 
-   const formatDate = (date) => {
-     return new Intl.DateTimeFormat('en-GB', {
-       year: 'numeric',
-       month: 'long',
-       day: 'numeric',
-       hour: '2-digit',
-       minute: '2-digit'
-     }).format(new Date(date));
-   };
-
-   const formatFileSize = (bytes) => {
-     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-     if (bytes === 0) return '0 Bytes';
-     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-     return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
-   };
-
-   const generateReferralCode = (userId) => {
-     const code = `DIY${userId.substring(5, 9).toUpperCase()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-     referralCodes.set(code, {
-       userId,
-       uses: 0,
-       earnings: 0,
-       created: new Date().toISOString()
-     });
-     return code;
-   };
-
-   const checkFreeAnalysisAvailable = (userEmail) => {
-     const currentMonth = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-     const userRecord = userFreeAnalyses.get(userEmail);
-     
-     if (!userRecord || userRecord.month !== currentMonth) {
+   const saveToStorage = (key, data) => {
+     try {
+       localStorage.setItem(`diymatch_${key}`, JSON.stringify(data));
        return true;
+     } catch (error) {
+       console.warn('Storage save failed:', error);
+       return false;
      }
-     
-     return userRecord.used < APP_CONFIG.freeAnalysesPerMonth;
    };
 
-   const useFreeAnalysis = (userEmail) => {
-     const currentMonth = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-     const userRecord = userFreeAnalyses.get(userEmail) || { month: currentMonth, used: 0 };
-     
-     if (userRecord.month !== currentMonth) {
-       userRecord.month = currentMonth;
-       userRecord.used = 0;
+   const loadFromStorage = (key, defaultValue = null) => {
+     try {
+       const item = localStorage.getItem(`diymatch_${key}`);
+       return item ? JSON.parse(item) : defaultValue;
+     } catch (error) {
+       console.warn('Storage load failed:', error);
+       return defaultValue;
      }
-     
-     userRecord.used++;
-     userRecord.lastUsed = new Date().toISOString();
-     userFreeAnalyses.set(userEmail, userRecord);
-     
-     analytics.track('free_analysis_used', { userEmail, month: currentMonth });
    };
 
    // ============================================================================
-   // ENHANCED DATABASE OPERATIONS (combining best from both)
+   // SIMPLIFIED ANALYTICS
    // ============================================================================
-
-   const dbOperations = {
-     async createUser(userData) {
-       try {
-         const user = {
-           id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...userData,
-           createdAt: new Date().toISOString(),
-           analysisCount: 0,
-           totalSpent: 0,
-           referralCode: generateReferralCode(`user_${Date.now()}`),
-           settings: {
-             notifications: true,
-             newsletter: false,
-             theme: 'light',
-             language: 'en'
-           },
-           savedExperts: [],
-           savedProjects: [],
-           achievements: []
-         };
-         
-         registeredUsers.set(userData.email.toLowerCase(), user);
-         await db.query('users', 'create', user);
-         
-         // Send welcome email
-         await emailService.send(userData.email, 'welcome', user);
-         
-         analytics.track('user_created', { userType: userData.userType });
-         return { success: true, user };
-       } catch (error) {
-         console.error('Create user error:', error);
-         throw error;
-       }
+   
+   const analytics = {
+     track: (event, data = {}) => {
+       console.log('📊 Analytics:', event, data);
+       
+       // Store locally for later sync
+       const events = loadFromStorage('analytics', []);
+       events.push({
+         event,
+         data,
+         timestamp: Date.now(),
+         url: window.location.href
+       });
+       saveToStorage('analytics', events.slice(-100)); // Keep last 100 events
      },
+     
+     trackPageView: (page) => analytics.track('page_view', { page }),
+     trackError: (error) => analytics.track('error', { message: error.message || String(error) })
+   };
 
-     async createExpert(expertData) {
-       try {
-         const expert = {
-           id: `expert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...expertData,
-           createdAt: new Date().toISOString(),
-           verified: false,
-           rating: 0,
-           reviews: 0,
-           completedJobs: 0,
-           badges: [],
-           accountStatus: 'pending_verification',
-           earnings: 0,
-           responseRate: 100,
-           cancelRate: 0,
-           // Enhanced verification tracking
-           verificationStatus: {
-             identity: false,
-             qualifications: false,
-             insurance: false,
-             backgroundCheck: false,
-             documentsUploaded: false
-           },
-           documents: {
-             cv: expertData.cv || null,
-             certifications: expertData.certifications || [],
-             uploadedAt: new Date().toISOString()
-           }
-         };
-         
-         expertProfiles.set(expert.id, expert);
-         registeredUsers.set(expert.email.toLowerCase(), {
-           ...expert,
-           type: 'expert'
-         });
-         
-         // Store documents separately for admin review
-         if (expert.documents.cv || expert.documents.certifications.length > 0) {
-           expertDocuments.set(expert.id, expert.documents);
-           expert.verificationStatus.documentsUploaded = true;
-         }
-         
-         await db.query('experts', 'create', expert);
-         
-         analytics.track('expert_created', { profession: expertData.profession });
-         return { success: true, expert };
-       } catch (error) {
-         console.error('Create expert error:', error);
-         throw error;
-       }
-     },
+   // ============================================================================
+   // NETWORK STATUS
+   // ============================================================================
+   
+   function updateConnectivityStatus() {
+     const offlineMessage = document.getElementById('offline-message');
+     if (!navigator.onLine) {
+       offlineMessage.classList.remove('hidden');
+     } else {
+       offlineMessage.classList.add('hidden');
+     }
+   }
 
-     async saveAnalysis(analysisData) {
-       try {
-         const analysis = {
-           id: `analysis_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...analysisData,
-           timestamp: new Date().toISOString()
-         };
-         
-         if (!aiAnalysisHistory.has(analysisData.userEmail)) {
-           aiAnalysisHistory.set(analysisData.userEmail, []);
-         }
-         aiAnalysisHistory.get(analysisData.userEmail).unshift(analysis);
-         
-         await db.query('analyses', 'create', analysis);
-         
-         // Update user's analysis count
-         const user = registeredUsers.get(analysisData.userEmail);
-         if (user) {
-           user.analysisCount++;
-           registeredUsers.set(analysisData.userEmail, user);
-         }
-         
-         // Send analysis complete email
-         await emailService.send(analysisData.userEmail, 'analysisComplete', { analysis, user });
-         
-         analytics.track('analysis_completed', { 
-           problemType: analysisData.problemDetected, 
-           severity: analysisData.severity 
-         });
-         
-         return { success: true, analysis };
-       } catch (error) {
-         console.error('Save analysis error:', error);
-         throw error;
-       }
-     },
+   window.addEventListener('online', updateConnectivityStatus);
+   window.addEventListener('offline', updateConnectivityStatus);
+   updateConnectivityStatus();
 
-     async createBooking(bookingData) {
-       try {
-         const booking = {
-           id: `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...bookingData,
-           status: 'confirmed',
-           createdAt: new Date().toISOString(),
-           updates: [],
-           chatEnabled: true,
-           liabilityAccepted: bookingData.liabilityAccepted || false
-         };
-         
-         if (!bookings.has(bookingData.userEmail)) {
-           bookings.set(bookingData.userEmail, []);
-         }
-         bookings.get(bookingData.userEmail).push(booking);
-         
-         await db.query('bookings', 'create', booking);
-         
-         // Send confirmation emails with liability notice
-         const user = registeredUsers.get(bookingData.userEmail);
-         const expert = expertProfiles.get(bookingData.expertId);
-         
-         if (user && expert) {
-           await emailService.send(user.email, 'bookingConfirmation', { booking, user, expert });
-           await emailService.send(expert.email, 'bookingConfirmation', { booking, user, expert });
-         }
-         
-         // Send push notifications
-         await notificationService.sendPush(bookingData.userEmail, {
-           title: 'Booking Confirmed!',
-           body: `Your appointment with ${expert.name} is confirmed`
-         });
-         
-         await notificationService.sendPush(expert.id, {
-           title: 'New Booking!',
-           body: `You have a new booking with ${user.name}`
-         });
-         
-         analytics.trackConversion('booking', bookingData.totalCost);
-         
-         return { success: true, booking };
-       } catch (error) {
-         console.error('Create booking error:', error);
-         throw error;
-       }
-     },
+   // ============================================================================
+   // APP STATE MANAGEMENT
+   // ============================================================================
+   
+   let appState = {
+     currentPage: 'welcome',
+     user: null,
+     loading: false
+   };
 
-     async createEmergencyRequest(requestData) {
-       try {
-         const emergency = {
-           id: `emergency_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...requestData,
-           timestamp: new Date().toISOString(),
-           status: 'active',
-           respondedExperts: [],
-           location: await getUserLocation()
-         };
-         
-         emergencyRequests.set(emergency.id, emergency);
-         await db.query('emergencies', 'create', emergency);
-         
-         // Alert available experts
-         const availableExperts = Array.from(expertProfiles.values()).filter(expert => {
-           const matchesCategory = expert.specialties && expert.specialties.some(s => 
-             s.toLowerCase().includes(requestData.category.toLowerCase())
-           );
-           const isAvailable = expert.availability && expert.availability.includes('Emergency 24/7');
-           const isVerified = expert.verified;
-           return matchesCategory && isAvailable && isVerified;
-         });
-         
-         // Send notifications to all matching experts
-         for (const expert of availableExperts) {
-           await notificationService.sendPush(expert.id, {
-             title: '🚨 EMERGENCY REQUEST',
-             body: requestData.description,
-             requiresInteraction: true,
-             tag: 'emergency',
-             data: emergency
-           });
-         }
-         
-         analytics.track('emergency_created', { 
-           category: requestData.category, 
-           notifiedExperts: availableExperts.length 
-         });
-         
-         return { success: true, emergency, notifiedExperts: availableExperts.length };
-       } catch (error) {
-         console.error('Create emergency error:', error);
-         throw error;
-       }
-     },
+   const setState = (newState) => {
+     appState = { ...appState, ...newState };
+     render();
+   };
 
-     async createQuoteRequest(quoteData) {
-       try {
-         const quote = {
-           id: `quote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...quoteData,
-           status: 'pending',
-           createdAt: new Date().toISOString(),
-           responses: []
-         };
-         
-         if (!quoteRequests.has(quoteData.userEmail)) {
-           quoteRequests.set(quoteData.userEmail, []);
-         }
-         quoteRequests.get(quoteData.userEmail).push(quote);
-         
-         await db.query('quotes', 'create', quote);
-         
-         // Notify relevant experts
-         const relevantExperts = Array.from(expertProfiles.values()).filter(expert => 
-           expert.profession.toLowerCase().includes(quoteData.category.toLowerCase()) &&
-           expert.accountStatus === 'verified'
-         );
-         
-         for (const expert of relevantExperts) {
-           await notificationService.sendPush(expert.id, {
-             title: 'New Quote Request',
-             body: `${quoteData.urgency === 'urgent' ? '🚨 URGENT: ' : ''}${quoteData.description.substring(0, 50)}...`,
-             data: quote
-           });
-         }
-         
-         analytics.track('quote_requested', { 
-           category: quoteData.category, 
-           urgency: quoteData.urgency 
-         });
-         
-         return { success: true, quote };
-       } catch (error) {
-         console.error('Create quote error:', error);
-         throw error;
-       }
-     },
+   // ============================================================================
+   // PAGES
+   // ============================================================================
+   
+   const WelcomePage = () => {
+     return `
+       <div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+         <div class="safe-area-top">
+           <div class="container py-8">
+             <!-- Header -->
+             <div class="flex items-center justify-between mb-12">
+               <div class="flex items-center gap-2">
+                 <div class="text-3xl">🔧</div>
+                 <h1 class="text-2xl font-bold text-gray-800">DIYMatch</h1>
+               </div>
+             </div>
 
-     async createReview(reviewData) {
-       try {
-         const review = {
-           id: `review_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-           ...reviewData,
-           timestamp: new Date().toISOString(),
-           verified: true,
-           helpful: 0
-         };
-         
-         if (!expertReviews.has(reviewData.expertId)) {
-           expertReviews.set(reviewData.expertId, []);
-         }
-         expertReviews.get(reviewData.expertId).push(review);
-         
-         await db.query('reviews', 'create', review);
-         
-         // Update expert's rating
-         const expert = expertProfiles.get(reviewData.expertId);
-         if (expert) {
-           const allReviews = expertReviews.get(reviewData.expertId);
-           const totalRating = allReviews.reduce((sum, r) => sum + r.rating, 0);
-           expert.rating = parseFloat((totalRating / allReviews.length).toFixed(1));
-           expert.reviews = allReviews.length;
+             <!-- Hero Section -->
+             <div class="text-center mb-16 fade-in">
+               <h1 class="text-5xl font-bold mb-6">
+                 <span class="text-gray-800">Welcome to </span>
+                 <span class="text-blue-600">DIYMatch</span>
+               </h1>
+               <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-12">
+                 AI-powered DIY assistant that instantly analyzes your home problems and connects you with verified local experts
+               </p>
+
+               <!-- Action Buttons -->
+               <div class="grid gap-4 max-w-4xl mx-auto mb-16">
+                 <button onclick="navigateTo('register')" class="btn btn-primary p-6 rounded-2xl text-lg">
+                   <span class="flex items-center justify-center gap-3">
+                     <span class="text-2xl">🔍</span>
+                     <span>Get FREE AI Analysis</span>
+                   </span>
+                 </button>
+                 
+                 <button onclick="navigateTo('expert-register')" class="btn btn-success p-6 rounded-2xl text-lg">
+                   <span class="flex items-center justify-center gap-3">
+                     <span class="text-2xl">👨‍🔧</span>
+                     <span>Join as Expert</span>
+                   </span>
+                 </button>
+
+                 <button onclick="navigateTo('login')" class="btn btn-secondary p-6 rounded-2xl text-lg">
+                   <span class="flex items-center justify-center gap-3">
+                     <span class="text-2xl">🔑</span>
+                     <span>Sign In</span>
+                   </span>
+                 </button>
+               </div>
+             </div>
+
+             <!-- Features -->
+             <div class="mb-16">
+               <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">How DIYMatch Works</h2>
+               
+               <div class="grid grid-cols-3 gap-8 max-w-6xl mx-auto">
+                 <div class="feature-card">
+                   <div class="feature-icon">🤖</div>
+                   <h3 class="text-2xl font-bold mb-4 text-gray-800">FREE AI Analysis</h3>
+                   <p class="text-gray-600">
+                     Upload a photo and get completely free problem identification, with detailed analysis and safety warnings.
+                   </p>
+                 </div>
+                 
+                 <div class="feature-card">
+                   <div class="feature-icon">🎯</div>
+                   <h3 class="text-2xl font-bold mb-4 text-gray-800">Expert Connection</h3>
+                   <p class="text-gray-600">
+                     When DIY isn't enough, instantly connect with verified local professionals who can help.
+                   </p>
+                 </div>
+                 
+                 <div class="feature-card">
+                   <div class="feature-icon">🛡️</div>
+                   <h3 class="text-2xl font-bold mb-4 text-gray-800">Safety First</h3>
+                   <p class="text-gray-600">
+                     Our AI knows when a job requires professional help and will recommend expert assistance for safety.
+                   </p>
+                 </div>
+               </div>
+             </div>
+
+             <!-- Trust Indicators -->
+             <div class="text-center">
+               <div class="flex justify-center gap-8 mb-4">
+                 <div>
+                   <div class="text-3xl font-bold text-blue-600">10K+</div>
+                   <div class="text-gray-600">Active Users</div>
+                 </div>
+                 <div>
+                   <div class="text-3xl font-bold text-green-600">500+</div>
+                   <div class="text-gray-600">Verified Experts</div>
+                 </div>
+                 <div>
+                   <div class="text-3xl font-bold text-purple-600">4.8★</div>
+                   <div class="text-gray-600">App Rating</div>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     `;
+   };
+
+   const RegisterPage = () => {
+     return `
+       <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+         <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+           <div class="text-center mb-8">
+             <h1 class="text-3xl font-bold text-gray-800 mb-2">Join DIYMatch</h1>
+             <p class="text-gray-600">Start solving your DIY problems today</p>
+           </div>
            
-           // Award badges
-           if (expert.rating >= 4.9 && expert.reviews >= 50) {
-             if (!expert.badges.includes('Top Rated')) {
-               expert.badges.push('Top Rated');
-             }
-           }
+           <form onsubmit="handleRegister(event)" class="space-y-4">
+             <input type="text" name="name" placeholder="Full Name" required class="form-input">
+             <input type="email" name="email" placeholder="Email Address" required class="form-input">
+             <input type="text" name="postcode" placeholder="Postcode" required class="form-input">
+             <input type="tel" name="phone" placeholder="Phone Number" required class="form-input">
+             
+             <button type="submit" class="btn btn-primary w-full py-3">
+               ${appState.loading ? '<div class="spinner mx-auto" style="width: 1.5rem; height: 1.5rem;"></div>' : 'Create Account'}
+             </button>
+             
+             <button type="button" onclick="navigateTo('welcome')" class="btn btn-secondary w-full py-3">
+               Back
+             </button>
+           </form>
+         </div>
+       </div>
+     `;
+   };
+
+   const UserDashboard = () => {
+     const activeTab = appState.activeTab || 'home';
+     
+     const renderContent = () => {
+       switch (activeTab) {
+         case 'analyze':
+           return AIAnalysisPage();
+         default:
+           return `
+             <div class="space-y-6 fade-in">
+               <!-- Welcome Card -->
+               <div class="card" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white;">
+                 <h2 class="text-2xl font-bold mb-2">Welcome back, ${appState.user?.name || 'User'}!</h2>
+                 <p style="opacity: 0.9;">What can we help you fix today?</p>
+               </div>
+
+               <!-- Quick Actions -->
+               <div class="grid grid-cols-2 gap-4">
+                 <button onclick="setActiveTab('analyze')" class="card text-center hover:shadow-lg" style="background: #3b82f6; color: white;">
+                   <div class="text-3xl mb-2">📸</div>
+                   <div class="font-semibold">New Analysis</div>
+                   <div class="text-xs mt-1" style="opacity: 0.8;">✨ FREE this month!</div>
+                 </button>
+                 
+                 <button class="card text-center hover:shadow-lg" style="background: #059669; color: white;">
+                   <div class="text-3xl mb-2">👨‍🔧</div>
+                   <div class="font-semibold">Find Experts</div>
+                   <div class="text-xs mt-1" style="opacity: 0.8;">Coming soon</div>
+                 </button>
+                 
+                 <button class="card text-center hover:shadow-lg" style="background: #dc2626; color: white;">
+                   <div class="text-3xl mb-2">🚨</div>
+                   <div class="font-semibold">Emergency</div>
+                   <div class="text-xs mt-1" style="opacity: 0.8;">24/7 help</div>
+                 </button>
+                 
+                 <button class="card text-center hover:shadow-lg" style="background: #9333ea; color: white;">
+                   <div class="text-3xl mb-2">🛠️</div>
+                   <div class="font-semibold">Find Parts</div>
+                   <div class="text-xs mt-1" style="opacity: 0.8;">Coming soon</div>
+                 </button>
+               </div>
+
+               <!-- Tips Card -->
+               <div class="card" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
+                 <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                   <span>💡</span>
+                   Pro Tip
+                 </h3>
+                 <p class="text-gray-700">
+                   For best AI analysis results, take photos in good lighting and include the whole problem area.
+                 </p>
+               </div>
+             </div>
+           `;
+       }
+     };
+
+     return `
+       <div class="min-h-screen bg-gray-50">
+         <!-- Header -->
+         <div class="safe-area-top bg-white shadow-sm sticky top-0 z-50">
+           <div class="container py-4">
+             <div class="flex justify-between items-center">
+               <h1 class="text-2xl font-bold flex items-center">
+                 <span class="text-3xl mr-2">🔧</span>
+                 DIYMatch
+               </h1>
+               <button onclick="logout()" class="text-gray-600 hover:text-gray-800 px-3 py-1 rounded">
+                 Logout
+               </button>
+             </div>
+           </div>
+         </div>
+         
+         <!-- Main Content -->
+         <div class="container py-6" style="padding-bottom: 6rem;">
+           ${renderContent()}
+         </div>
+         
+         <!-- Bottom Navigation -->
+         <div class="bottom-nav safe-area-bottom">
+           <button onclick="setActiveTab('home')" class="bottom-nav-item ${activeTab === 'home' ? 'active' : ''}">
+             <div class="bottom-nav-icon">🏠</div>
+             <span>Home</span>
+           </button>
+           <button onclick="setActiveTab('analyze')" class="bottom-nav-item ${activeTab === 'analyze' ? 'active' : ''}">
+             <div class="bottom-nav-icon">📸</div>
+             <span>Analyze</span>
+           </button>
+           <button class="bottom-nav-item">
+             <div class="bottom-nav-icon">👨‍🔧</div>
+             <span>Experts</span>
+           </button>
+           <button class="bottom-nav-item">
+             <div class="bottom-nav-icon">📋</div>
+             <span>History</span>
+           </button>
+         </div>
+       </div>
+     `;
+   };
+
+   const AIAnalysisPage = () => {
+     const step = appState.analysisStep || 'upload';
+     const imageData = appState.imageData;
+     const analysis = appState.analysis;
+
+     const renderUploadStep = () => `
+       <div class="text-center space-y-6">
+         <div class="text-6xl mb-4">📸</div>
+         <h2 class="text-2xl font-bold mb-4">Upload Problem Photo</h2>
+         <p class="text-gray-600 mb-6">Take a clear photo of your DIY problem for AI analysis</p>
+         
+         <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 cursor-pointer hover:border-blue-500 transition-colors" onclick="document.getElementById('file-input').click()">
+           <div class="text-4xl mb-2">📁</div>
+           <p class="font-semibold mb-1">Click to upload photo</p>
+           <p class="text-sm text-gray-500">JPG, PNG, WebP up to 10MB</p>
+         </div>
+         
+         <input type="file" id="file-input" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+
+         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+           <h3 class="font-semibold text-blue-800 mb-2">📋 Tips for Best Results:</h3>
+           <ul class="text-sm text-blue-700 text-left space-y-1">
+             <li>• Ensure good lighting</li>
+             <li>• Include the whole problem area</li>
+             <li>• Take photo from multiple angles if needed</li>
+             <li>• Avoid blurry or dark images</li>
+           </ul>
+         </div>
+       </div>
+     `;
+
+     const renderDescribeStep = () => `
+       <div class="space-y-6">
+         <div class="text-center mb-6">
+           <h2 class="text-2xl font-bold mb-4">Describe the Problem</h2>
+           <p class="text-gray-600">Tell us more about what's happening for better analysis</p>
+         </div>
+
+         <div class="bg-gray-100 rounded-lg p-4 mb-6">
+           <div class="text-center">
+             <img src="${imageData?.data}" alt="Uploaded problem" class="max-h-48 mx-auto rounded-lg shadow-md">
+             <p class="text-sm text-gray-600 mt-2">${imageData?.metadata?.name}</p>
+           </div>
+         </div>
+
+         <textarea id="description" placeholder="Describe what's wrong, when it started, any sounds, smells, or other details..." rows="4" class="form-input resize-none"></textarea>
+
+         <div class="flex gap-4">
+           <button onclick="setAnalysisStep('upload')" class="btn btn-secondary flex-1 py-3">Back</button>
+           <button onclick="startAnalysis()" class="btn btn-primary flex-1 py-3">Analyze Problem</button>
+         </div>
+       </div>
+     `;
+
+     const renderAnalyzingStep = () => `
+       <div class="text-center space-y-6">
+         <div class="text-6xl mb-4 animate-pulse">🤖</div>
+         <h2 class="text-2xl font-bold mb-4">AI Analysis in Progress</h2>
+         <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+           <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-pulse" style="width: 75%;"></div>
+         </div>
+         <div class="space-y-2 text-gray-600">
+           <p>🔍 Analyzing image patterns...</p>
+           <p>🧠 Processing problem description...</p>
+           <p>⚖️ Calculating safety risks...</p>
+           <p>💡 Generating recommendations...</p>
+         </div>
+       </div>
+     `;
+
+     const renderResultsStep = () => `
+       <div class="space-y-6">
+         <!-- Header -->
+         <div class="text-center mb-6">
+           <div class="text-6xl mb-4">✅</div>
+           <h2 class="text-2xl font-bold mb-2">Analysis Complete</h2>
+           <div class="flex justify-center items-center gap-2">
+             <span class="text-sm text-gray-600">Confidence:</span>
+             <span class="font-semibold text-blue-600">${analysis?.confidence}</span>
+           </div>
+         </div>
+
+         <!-- Problem Summary -->
+         <div class="card">
+           <div class="flex justify-between items-start mb-4">
+             <h3 class="text-xl font-bold">${analysis?.problemDetected}</h3>
+             <span class="px-3 py-1 rounded-full text-sm font-semibold ${
+               analysis?.severity === 'Critical' ? 'bg-red-100 text-red-800' :
+               analysis?.severity === 'High' ? 'bg-orange-100 text-orange-800' :
+               'bg-yellow-100 text-yellow-800'
+             }">${analysis?.severity}</span>
+           </div>
+           <p class="text-gray-700 mb-4">${analysis?.description}</p>
            
-           expertProfiles.set(reviewData.expertId, expert);
-         }
-         
-         analytics.track('review_created', { 
-           expertId: reviewData.expertId, 
-           rating: reviewData.rating 
-         });
-         
-         return { success: true, review };
-       } catch (error) {
-         console.error('Create review error:', error);
-         throw error;
-       }
-     },
+           <div class="grid grid-cols-2 gap-4 mb-4">
+             <div>
+               <p class="text-sm text-gray-600">DIY Friendly</p>
+               <p class="font-semibold">${analysis?.isDIYFriendly ? '✅ Yes' : '❌ No'}</p>
+             </div>
+             <div>
+               <p class="text-sm text-gray-600">Estimated Cost</p>
+               <p class="font-semibold">${analysis?.estimatedCost?.range}</p>
+             </div>
+           </div>
+         </div>
 
-     // Enhanced document verification
-     async verifyExpertDocuments(expertId, verificationData) {
-       try {
-         const expert = expertProfiles.get(expertId);
-         if (!expert) {
-           throw new Error('Expert not found');
-         }
+         <!-- Safety Warnings -->
+         ${analysis?.safetyWarnings?.length > 0 ? `
+           <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+             <h3 class="text-lg font-bold text-red-800 mb-3 flex items-center gap-2">
+               <span>⚠️</span>
+               Safety Warnings
+             </h3>
+             <ul class="space-y-2">
+               ${analysis.safetyWarnings.map(warning => `<li class="text-red-700 text-sm">${warning}</li>`).join('')}
+             </ul>
+           </div>
+         ` : ''}
 
-         // Update verification status
-         expert.verificationStatus = {
-           ...expert.verificationStatus,
-           ...verificationData,
-           lastUpdated: new Date().toISOString()
-         };
+         <!-- Next Steps -->
+         <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+           <h3 class="text-lg font-bold text-blue-800 mb-3 flex items-center gap-2">
+             <span>📋</span>
+             Recommended Next Steps
+           </h3>
+           <ol class="space-y-2">
+             ${analysis?.nextSteps?.map((step, index) => `
+               <li class="text-blue-700 text-sm flex items-start gap-2">
+                 <span class="font-semibold">${index + 1}.</span>
+                 <span>${step}</span>
+               </li>
+             `).join('') || ''}
+           </ol>
+         </div>
 
-         // Check if fully verified
-         const allVerified = Object.values(expert.verificationStatus)
-           .filter(v => typeof v === 'boolean')
-           .every(v => v === true);
+         <!-- Action Buttons -->
+         <div class="flex gap-4">
+           <button onclick="resetAnalysis()" class="btn btn-secondary flex-1 py-3">New Analysis</button>
+           <button onclick="alert('Expert booking coming soon!')" class="btn btn-success flex-1 py-3">Book Expert</button>
+         </div>
+       </div>
+     `;
 
-         if (allVerified) {
-           expert.verified = true;
-           expert.accountStatus = 'verified';
-           expert.badges.push('Verified Professional');
-         }
+     return `
+       <div class="max-w-2xl mx-auto">
+         <div class="card">
+           <!-- Progress Steps -->
+           <div class="steps">
+             ${['Upload', 'Describe', 'Analyze', 'Results'].map((stepName, index) => {
+               const stepKey = ['upload', 'describe', 'analyzing', 'results'][index];
+               const isActive = step === stepKey;
+               const isCompleted = ['upload', 'describe', 'analyzing', 'results'].indexOf(step) > index;
+               
+               return `
+                 <div class="step ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}">
+                   <div class="step-circle">${isCompleted ? '✓' : index + 1}</div>
+                   <span class="text-xs mt-1">${stepName}</span>
+                 </div>
+               `;
+             }).join('')}
+           </div>
 
-         expertProfiles.set(expertId, expert);
-         await db.query('experts', 'update', expert);
+           <!-- Step Content -->
+           ${step === 'upload' ? renderUploadStep() : ''}
+           ${step === 'describe' ? renderDescribeStep() : ''}
+           ${step === 'analyzing' ? renderAnalyzingStep() : ''}
+           ${step === 'results' ? renderResultsStep() : ''}
+         </div>
+       </div>
+     `;
+   };
 
-         // Store verification record
-         const verificationRecord = {
-           id: `verification_${Date.now()}`,
-           expertId,
-           ...verificationData,
-           verifiedBy: 'admin', // In production, would be actual admin ID
-           timestamp: new Date().toISOString()
-         };
-         
-         verificationRecords.set(verificationRecord.id, verificationRecord);
-         await db.query('verifications', 'create', verificationRecord);
+   // ============================================================================
+   // NAVIGATION AND EVENT HANDLERS
+   // ============================================================================
+   
+   const navigateTo = (page) => {
+     triggerHaptic('light');
+     analytics.trackPageView(page);
+     setState({ currentPage: page, activeTab: null });
+   };
 
-         return { success: true, expert, verification: verificationRecord };
-       } catch (error) {
-         console.error('Document verification error:', error);
-         throw error;
-       }
+   const setActiveTab = (tab) => {
+     triggerHaptic('light');
+     setState({ activeTab: tab });
+   };
+
+   const setAnalysisStep = (step) => {
+     setState({ analysisStep: step });
+   };
+
+   const logout = () => {
+     if (confirm('Are you sure you want to logout?')) {
+       triggerHaptic('medium');
+       currentUser = null;
+       saveToStorage('user', null);
+       setState({ currentPage: 'welcome', user: null });
      }
    };
 
-   // ============================================================================
-   // ENHANCED REACT COMPONENTS (keeping V14 structure with improvements)
-   // ============================================================================
-
-   const { useState, useEffect, useContext, createContext, useRef, useCallback, useMemo } = React;
-
-   // Contexts
-   const AuthContext = createContext();
-   const ThemeContext = createContext();
-   const NotificationContext = createContext();
-
-   // Custom Hooks
-   const useAuth = () => useContext(AuthContext);
-   const useTheme = () => useContext(ThemeContext);
-   const useNotifications = () => useContext(NotificationContext);
-
-   const useLocalStorage = (key, initialValue) => {
-     const [storedValue, setStoredValue] = useState(() => {
-       try {
-         const item = window.localStorage.getItem(key);
-         return item ? JSON.parse(item) : initialValue;
-       } catch (error) {
-         console.error('LocalStorage error:', error);
-         return initialValue;
-       }
-     });
-
-     const setValue = useCallback((value) => {
-       try {
-         setStoredValue(value);
-         window.localStorage.setItem(key, JSON.stringify(value));
-       } catch (error) {
-         console.error('LocalStorage error:', error);
-       }
-     }, [key]);
-
-     return [storedValue, setValue];
-   };
-
-   const useDebounce = (value, delay) => {
-     const [debouncedValue, setDebouncedValue] = useState(value);
-
-     useEffect(() => {
-       const handler = setTimeout(() => {
-         setDebouncedValue(value);
-       }, delay);
-
-       return () => clearTimeout(handler);
-     }, [value, delay]);
-
-     return debouncedValue;
-   };
-
-   // ============================================================================
-   // ENHANCED SHARED COMPONENTS (combining best from both)
-   // ============================================================================
-
-   const LoadingSpinner = ({ size = 'medium', color = 'blue', text = '' }) => {
-     const sizeClasses = {
-       small: 'w-4 h-4',
-       medium: 'w-8 h-8',
-       large: 'w-12 h-12'
-     };
+   const handleRegister = async (event) => {
+     event.preventDefault();
+     setState({ loading: true });
      
-     const colorClasses = {
-       blue: 'border-blue-600 border-t-transparent',
-       white: 'border-white border-t-transparent',
-       green: 'border-green-600 border-t-transparent',
-       red: 'border-red-600 border-t-transparent'
-     };
-     
-     return React.createElement('div', { className: 'flex flex-col items-center gap-2' },
-       React.createElement('div', {
-         className: `${sizeClasses[size]} border-4 ${colorClasses[color]} rounded-full animate-spin`
-       }),
-       text && React.createElement('p', { className: 'text-sm text-gray-600' }, text)
-     );
+     try {
+       const formData = new FormData(event.target);
+       const userData = {
+         id: `user_${Date.now()}`,
+         name: formData.get('name'),
+         email: formData.get('email'),
+         postcode: formData.get('postcode'),
+         phone: formData.get('phone'),
+         type: 'user',
+         createdAt: new Date().toISOString()
+       };
+       
+       // Simulate registration delay
+       await new Promise(resolve => setTimeout(resolve, 1000));
+       
+       currentUser = userData;
+       saveToStorage('user', userData);
+       analytics.track('user_registered', { userType: 'user' });
+       
+       setState({ 
+         currentPage: 'dashboard',
+         user: userData,
+         loading: false 
+       });
+     } catch (error) {
+       alert('Registration failed. Please try again.');
+       analytics.trackError(error);
+       setState({ loading: false });
+     }
    };
 
-   const EmptyState = ({ icon, title, description, action }) => {
-     return React.createElement('div', { className: 'text-center py-12 fade-in' },
-       React.createElement('div', { className: 'text-6xl mb-4 opacity-50' }, icon),
-       React.createElement('h3', { className: 'text-xl font-semibold mb-2 text-gray-800' }, title),
-       React.createElement('p', { className: 'text-gray-600 mb-4' }, description),
-       action
-     );
-   };
+   const handleImageUpload = (event) => {
+     const file = event.target.files[0];
+     if (!file) return;
 
-   const ProgressSteps = ({ steps, currentStep }) => {
-     return React.createElement('div', { className: 'progress-steps mb-6' },
-       steps.map((step, index) =>
-         React.createElement('div', {
-           key: index,
-           className: `progress-step ${
-             index < currentStep ? 'completed' : 
-             index === currentStep ? 'active' : ''
-           }`
+     if (file.size > APP_CONFIG.maxImageSize) {
+       alert(`File too large. Maximum size is ${APP_CONFIG.maxImageSize / 1024 / 1024}MB`);
+       return;
+     }
+
+     const reader = new FileReader();
+     reader.onload = (e) => {
+       setState({
+         imageData: {
+           type: 'image',
+           data: e.target.result,
+           file,
+           metadata: {
+             name: file.name,
+             size: file.size,
+             type: file.type
+           }
          },
-           React.createElement('div', { className: 'progress-step-circle' },
-             index < currentStep ? '✓' : index + 1
-           ),
-           React.createElement('div', { className: 'text-xs mt-1' }, step)
-         )
-       )
-     );
-   };
-
-   const StarRating = ({ rating, onRate, readonly = false, size = 'medium' }) => {
-     const [hover, setHover] = useState(0);
-     
-     const sizes = {
-       small: 'text-sm',
-       medium: 'text-xl',
-       large: 'text-2xl'
+         analysisStep: 'describe'
+       });
+       triggerHaptic('success');
      };
-     
-     return React.createElement('div', { className: 'star-rating' },
-       [1, 2, 3, 4, 5].map((star) =>
-         React.createElement('span', {
-           key: star,
-           className: `star ${star <= (hover || rating) ? 'filled' : ''} ${sizes[size]}`,
-           onClick: () => {
-             if (!readonly && onRate) {
-               onRate(star);
-               triggerHaptic('light');
-             }
-           },
-           onMouseEnter: () => !readonly && setHover(star),
-           onMouseLeave: () => !readonly && setHover(0),
-           style: { cursor: readonly ? 'default' : 'pointer' }
-         }, '★')
-       )
-     );
+     reader.readAsDataURL(file);
    };
 
-   const Modal = ({ isOpen, onClose, title, children, size = 'medium' }) => {
-     useEffect(() => {
-       if (isOpen) {
-         document.body.style.overflow = 'hidden';
-       } else {
-         document.body.style.overflow = '';
-       }
-       
-       const handleEscape = (e) => {
-         if (e.key === 'Escape' && isOpen) {
-           onClose();
-         }
+   const startAnalysis = async () => {
+     const description = document.getElementById('description')?.value;
+     if (!description?.trim()) {
+       alert('Please describe the problem');
+       return;
+     }
+
+     setState({ analysisStep: 'analyzing' });
+
+     try {
+       // Simulate AI analysis
+       await new Promise(resolve => setTimeout(resolve, 3000));
+
+       const mockAnalysis = {
+         id: `analysis_${Date.now()}`,
+         problemDetected: 'Electrical Socket Issue',
+         category: 'Electrical',
+         confidence: '89%',
+         severity: 'High',
+         description: 'Potential electrical safety hazard detected. The socket appears to show signs of burning or discoloration, which could indicate overheating or electrical arcing.',
+         isDIYFriendly: false,
+         estimatedCost: {
+           range: '£80-£200',
+           professional: '£120-£200'
+         },
+         safetyWarnings: [
+           '⚡ Turn off power at circuit breaker immediately',
+           '☠️ DANGER: Risk of electrocution - never work on live circuits',
+           '🔥 Do not use socket until professionally inspected',
+           '📞 Contact emergency electrician if sparking or burning smell'
+         ],
+         nextSteps: [
+           'Turn off power to the circuit immediately',
+           'Do not use the socket',
+           'Contact a certified electrician',
+           'Take photos for insurance if needed'
+         ],
+         timestamp: new Date().toISOString()
        };
-       
-       document.addEventListener('keydown', handleEscape);
-       
-       return () => {
-         document.body.style.overflow = '';
-         document.removeEventListener('keydown', handleEscape);
-       };
-     }, [isOpen, onClose]);
-     
-     if (!isOpen) return null;
-     
-     const sizes = {
-       small: 'max-w-sm',
-       medium: 'max-w-md',
-       large: 'max-w-2xl',
-       full: 'max-w-4xl'
-     };
-     
-     return React.createElement('div', {
-       className: 'modal-backdrop',
-       onClick: (e) => {
-         if (e.target.className.includes('modal-backdrop')) {
-           onClose();
-           triggerHaptic('light');
-         }
-       }
-     },
-       React.createElement('div', { className: `modal-content ${sizes[size]}` },
-         React.createElement('div', { className: 'flex justify-between items-center mb-4' },
-           React.createElement('h2', { className: 'text-xl font-semibold text-gray-800' }, title),
-           React.createElement('button', {
-             onClick: () => {
-               onClose();
-               triggerHaptic('light');
-             },
-             className: 'text-gray-500 hover:text-gray-700 text-2xl mobile-touch p-1'
-           }, '×')
-         ),
-         children
-       )
-     );
-   };
 
-   const SuccessAnimation = ({ message }) => {
-     return React.createElement('div', { className: 'text-center' },
-       React.createElement('div', { className: 'success-animation mb-4' },
-         React.createElement('div', { className: 'text-white text-5xl' }, '✓')
-       ),
-       React.createElement('h3', { className: 'text-xl font-semibold text-gray-800' }, message)
-     );
-   };
+       // Store analysis
+       const analyses = loadFromStorage('analyses', []);
+       analyses.unshift(mockAnalysis);
+       saveToStorage('analyses', analyses.slice(0, 50)); // Keep last 50
 
-   const AISuggestionCard = ({ suggestion, onAccept, onReject }) => {
-     return React.createElement('div', { className: 'ai-suggestion' },
-       React.createElement('div', { className: 'flex justify-between items-start mb-2' },
-         React.createElement('h4', { className: 'font-semibold text-blue-800' }, 'AI Suggestion'),
-         React.createElement('span', { className: 'text-sm text-blue-600' }, 
-           `${suggestion.confidence}% confidence`
-         )
-       ),
-       React.createElement('p', { className: 'text-sm text-blue-700 mb-3' }, suggestion.action),
-       React.createElement('div', { className: 'flex gap-2' },
-         React.createElement('button', {
-           onClick: () => {
-             onAccept();
-             triggerHaptic('success');
-           },
-           className: 'px-3 py-1 bg-blue-600 text-white rounded-lg text-sm mobile-touch hover:bg-blue-700'
-         }, 'Accept'),
-         React.createElement('button', {
-           onClick: () => {
-             onReject();
-             triggerHaptic('light');
-           },
-           className: 'px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm mobile-touch hover:bg-gray-300'
-         }, 'Dismiss')
-       )
-     );
-   };
-
-   // Enhanced File Upload Component with document support
-   const FileUploadZone = ({ onUpload, accept, multiple = false, maxSize, label }) => {
-     const [isDragging, setIsDragging] = useState(false);
-     const [uploading, setUploading] = useState(false);
-     const fileInputRef = useRef(null);
-     
-     const handleDrop = useCallback((e) => {
-       e.preventDefault();
-       setIsDragging(false);
-       
-       const files = Array.from(e.dataTransfer.files);
-       handleFiles(files);
-     }, []);
-     
-     const handleDragOver = useCallback((e) => {
-       e.preventDefault();
-       setIsDragging(true);
-     }, []);
-     
-     const handleDragLeave = useCallback(() => {
-       setIsDragging(false);
-     }, []);
-     
-     const handleFiles = async (files) => {
-       setUploading(true);
-       
-       const validFiles = files.filter(file => {
-         if (maxSize && file.size > maxSize) {
-           alert(`File ${file.name} is too large. Maximum size is ${formatFileSize(maxSize)}`);
-           return false;
-         }
-         return true;
+       setState({ 
+         analysis: mockAnalysis,
+         analysisStep: 'results'
        });
        
-       try {
-         const processedFiles = [];
-         
-         for (const file of validFiles) {
-           const reader = new FileReader();
-           const result = await new Promise((resolve, reject) => {
-             reader.onload = (event) => resolve({
-               type: file.type.startsWith('image/') ? 'image' : 'document',
-               data: event.target.result,
-               file,
-               metadata: {
-                 name: file.name,
-                 size: file.size,
-                 type: file.type,
-                 lastModified: file.lastModified
-               }
-             });
-             reader.onerror = reject;
-             reader.readAsDataURL(file);
-           });
-           
-           processedFiles.push(result);
+       analytics.track('ai_analysis_completed', { 
+         problemType: mockAnalysis.problemDetected,
+         severity: mockAnalysis.severity 
+       });
+
+     } catch (error) {
+       console.error('Analysis error:', error);
+       alert('Analysis failed. Please try again.');
+       analytics.trackError(error);
+       setState({ analysisStep: 'describe' });
+     }
+   };
+
+   const resetAnalysis = () => {
+     setState({
+       analysisStep: 'upload',
+       imageData: null,
+       analysis: null
+     });
+   };
+
+   // ============================================================================
+   // MAIN RENDER FUNCTION
+   // ============================================================================
+   
+   const render = () => {
+     const rootElement = document.getElementById('root');
+     
+     let content = '';
+     
+     switch (appState.currentPage) {
+       case 'welcome':
+         content = WelcomePage();
+         break;
+       case 'register':
+         content = RegisterPage();
+         break;
+       case 'dashboard':
+         content = UserDashboard();
+         break;
+       default:
+         content = WelcomePage();
+     }
+     
+     rootElement.innerHTML = content;
+   };
+
+   // ============================================================================
+   // INITIALIZATION
+   // ============================================================================
+   
+   const initializeApp = async () => {
+     try {
+       console.log('🔧 Initializing DIYMatch...');
+       
+       // Check for existing user session
+       const savedUser = loadFromStorage('user');
+       if (savedUser) {
+         currentUser = savedUser;
+         setState({ 
+           currentPage: 'dashboard',
+           user: savedUser
+         });
+       }
+       
+       analytics.trackPageView('app_launch');
+       
+       // Hide splash screen
+       setTimeout(() => {
+         const splash = document.getElementById('splash-screen');
+         if (splash) {
+           splash.style.opacity = '0';
+           splash.style.transition = 'opacity 0.3s';
+           setTimeout(() => splash.style.display = 'none', 300);
          }
-         
-         if (!multiple && processedFiles.length > 1) {
-           onUpload([processedFiles[0]]);
-         } else {
-           onUpload(multiple ? processedFiles : processedFiles[0]);
-         }
-         
-         triggerHaptic('success');
-       } catch (error) {
-         console.error('File processing error:', error);
-         alert('Failed to process files');
-       } finally {
-         setUploading(false);
-       }
-     };
-     
-     return React.createElement('div', {
-       className: `file-upload-zone ${isDragging ? 'drag-over' : ''}`,
-       onDrop: handleDrop,
-       onDragOver: handleDragOver,
-       onDragLeave: handleDragLeave,
-       onClick: () => fileInputRef.current?.click()
-     },
-       React.createElement('input', {
-         ref: fileInputRef,
-         type: 'file',
-         accept: accept,
-         multiple: multiple,
-         style: { display: 'none' },
-         onChange: (e) => handleFiles(Array.from(e.target.files))
-       }),
-       uploading 
-         ? React.createElement('div', { className: 'flex flex-col items-center' },
-             React.createElement(LoadingSpinner, { size: 'medium' }),
-             React.createElement('p', { className: 'mt-2 text-gray-600' }, 'Processing files...')
-           )
-         : React.createElement('div', null,
-             React.createElement('div', { className: 'text-4xl mb-2' }, '📁'),
-             React.createElement('p', { className: 'font-semibold mb-1' }, 
-               label || (isDragging ? 'Drop files here' : 'Drop files or click to upload')
-             ),
-             React.createElement('p', { className: 'text-sm text-gray-500' },
-               accept ? `Accepted: ${accept}` : 'All file types accepted'
-             ),
-             maxSize && React.createElement('p', { className: 'text-xs text-gray-400 mt-1' },
-               `Maximum size: ${formatFileSize(maxSize)}`
-             )
-           )
-     );
+       }, 2000);
+       
+       // Initial render
+       render();
+       
+       console.log('✅ DIYMatch initialized successfully');
+       
+     } catch (error) {
+       console.error('❌ App initialization failed:', error);
+       analytics.trackError(error);
+       
+       // Show error message
+       document.getElementById('root').innerHTML = `
+         <div class="min-h-screen flex items-center justify-center p-4">
+           <div class="text-center max-w-md">
+             <div class="text-6xl mb-4">😔</div>
+             <h1 class="text-2xl font-bold mb-2 text-gray-800">App Loading Failed</h1>
+             <p class="text-gray-600 mb-4">Please refresh the page to try again.</p>
+             <button onclick="location.reload()" class="btn btn-primary">Refresh Page</button>
+           </div>
+         </div>
+       `;
+     }
    };
 
-   // Enhanced Liability Waiver Component
-   const LiabilityWaiver = ({ onAccept, required = true }) => {
-     const [accepted, setAccepted] = useState(false);
-     
-     const handleAccept = (e) => {
-       setAccepted(e.target.checked);
-       if (onAccept) {
-         onAccept(e.target.checked);
-       }
-     };
-     
-     return React.createElement('div', { className: 'liability-waiver' },
-       React.createElement('div', { className: 'liability-waiver-header' },
-         React.createElement('span', null, '⚠️'),
-         'Important Legal Notice'
-       ),
-       React.createElement('div', { className: 'liability-waiver-text mb-3' },
-         'DIYMatch is a platform that connects users with independent contractors. We do not employ these professionals and are not responsible for their work quality, safety practices, or outcomes. Users engage experts at their own risk and should verify credentials independently.'
-       ),
-       React.createElement('label', { className: 'flex items-start cursor-pointer' },
-         React.createElement('input', {
-           type: 'checkbox',
-           checked: accepted,
-           onChange: handleAccept,
-           required: required,
-           className: 'mt-1 mr-3'
-         }),
-         React.createElement('span', { className: 'text-sm font-medium' },
-           'I understand and accept these terms and conditions',
-           required && React.createElement('span', { className: 'text-red-500 ml-1' }, '*')
-         )
-       )
-     );
-   };
+   // Start the app when DOM is ready
+   if (document.readyState === 'loading') {
+     document.addEventListener('DOMContentLoaded', initializeApp);
+   } else {
+     initializeApp();
+   }
 
-   // Enhanced Button Component
-   const Button = ({ 
-     children, 
-     variant = 'primary', 
-     size = 'medium', 
-     loading = false, 
-     disabled = false, 
-     onClick, 
-     className = '',
-     ...props 
-   }) => {
-     const baseClasses = 'font-semibold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 mobile-touch';
-     
-     const variants = {
-       primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-       secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500',
-       success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
-       danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-       warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500'
-     };
-
-     const sizes = {
-       small: 'px-3 py-1.5 text-sm',
-       medium: 'px-4 py-2',
-       large: 'px-6 py-3 text-lg'
-     };
-
-     const handleClick = (e) => {
-       if (!disabled && !loading && onClick) {
-         triggerHaptic('light');
-         onClick(e);
-       }
-     };
-
-     return React.createElement('button', {
-       className: `${baseClasses} ${variants[variant]} ${sizes[size]} ${className} ${
-         disabled || loading ? 'opacity-50 cursor-not-allowed' : ''
-       }`,
-       disabled: disabled || loading,
-       onClick: handleClick,
-       ...props
-     },
-       loading ? React.createElement(LoadingSpinner, { size: 'small', color: 'white' }) : children
-     );
-   };
-
-   // Enhanced Input Component
-   const Input = ({ 
-     label, 
-     error, 
-     required = false, 
-     className = '', 
-     tooltip,
-     ...props 
-   }) => {
-     return React.createElement('div', { className: 'space-y-1' },
-       label && React.createElement('label', { 
-         className: 'block text-sm font-medium text-gray-700',
-         ...(tooltip && { 'data-tooltip': tooltip, className: 'tooltip block text-sm font-medium text-gray-700' })
-       }, 
-         label,
-         required && React.createElement('span', { className: 'text-red-500 ml-1' }, '*')
-       ),
-       React.createElement('input', {
-         className: `w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-           error ? 'border-red-500' : 'border-gray-300'
-         } ${className}`,
-         ...props
-       }),
-       error && React.createElement('p', { className: 'text-sm text-red-600' }, error)
-     );
-   };
-
-   // Progress Bar Component
-   const ProgressBar = ({ progress, showPercentage = true, color = 'blue' }) => {
-     const colorClasses = {
-       blue: 'bg-blue-600',
-       green: 'bg-green-600',
-       red: 'bg-red-600',
-       yellow: 'bg-yellow-600'
-     };
-
-     return React.createElement('div', { className: 'w-full' },
-       React.createElement('div', { className: 'w-full bg-gray-200 rounded-full h-2 overflow-hidden' },
-         React.createElement('div', {
-           className: `h-full transition-all duration-300 ${colorClasses[color]}`,
-           style: { width: `${Math.min(100, Math.max(0, progress))}%` }
-         })
-       ),
-       showPercentage && React.createElement('div', { 
-         className: 'text-sm text-gray-600 mt-1 text-center' 
-       }, `${Math.round(progress)}%`)
-     );
-   };
-
-   // Chat Interface Component
-   const ChatInterface = ({ messages = [], onSendMessage, loading = false }) => {
-     const [inputMessage, setInputMessage] = useState('');
-     const messagesEndRef = useRef(null);
-
-     const scrollToBottom = () => {
-       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-     };
-
-     useEffect(() => {
-       scrollToBottom();
-     }, [messages]);
-
-     const handleSend = () => {
-       if (inputMessage.trim() && onSendMessage) {
-         onSendMessage(inputMessage.trim());
-         setInputMessage('');
-         triggerHaptic('light');
-       }
-     };
-
-     const handleKeyPress = (e) => {
-       if (e.key === 'Enter' && !e.shiftKey) {
-         e.preventDefault();
-         handleSend();
-       }
-     };
-
-     return React.createElement('div', { className: 'flex flex-col h-full' },
-       React.createElement('div', { className: 'flex-1 overflow-y-auto p-4 space-y-2 smooth-scroll' },
-         messages.map((message, index) =>
-           React.createElement('div', {
-             key: index,
-             className: `flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`
-           },
-             React.createElement('div', {
-               className: `chat-bubble ${message.sender}`
-             },
-               React.createElement('div', { className: 'text-sm' }, message.text),
-               React.createElement('div', { className: 'text-xs opacity-70 mt-1' },
-                 new Date(message.timestamp).toLocaleTimeString([], { 
-                   hour: '2-digit', 
-                   minute: '2-digit' 
-                 })
-               )
-             )
-           )
-         ),
-         loading && React.createElement('div', { className: 'flex justify-start' },
-           React.createElement('div', { className: 'chat-bubble expert' },
-             React.createElement('div', { className: 'typing-indicator' },
-               React.createElement('div', { className: 'typing-dot' }),
-               React.createElement('div', { className: 'typing-dot' }),
-               React.createElement('div', { className: 'typing-dot' })
-             )
-           )
-         ),
-         React.createElement('div', { ref: messagesEndRef })
-       ),
-       React.createElement('div', { className: 'border-t pt-4 mt-4' },
-         React.createElement('div', { className: 'flex gap-2' },
-           React.createElement('input', {
-             type: 'text',
-             value: inputMessage,
-             onChange: (e) => setInputMessage(e.target.value),
-             onKeyPress: handleKeyPress,
-             placeholder: 'Type your message...',
-             className: 'flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-             disabled: loading
-           }),
-           React.createElement(Button, {
-             onClick: handleSend,
-             disabled: !inputMessage.trim() || loading
-           }, 'Send')
-         )
-       )
-     );
-   };
-
-   // Enhanced Verification Badge Component
-   const VerificationBadge = ({ status, type = 'full' }) => {
-     const statusConfig = {
-       verified: { className: 'verification-badge verified', icon: '✓', text: 'Verified' },
-       pending: { className: 'verification-badge pending', icon: '⏳', text: 'Pending' },
-       rejected: { className: 'verification-badge rejected', icon: '✗', text: 'Rejected' },
-       unverified: { className: 'verification-badge', icon: '◯', text: 'Unverified' }
-     };
-
-     const config = statusConfig[status] || statusConfig.unverified;
-
-     return React.createElement('span', { className: config.className },
-       React.createElement('span', null, config.icon),
-       type === 'full' && React.createElement('span', null, config.text)
-     );
-   };
-
-   // ============================================================================
-   // MAIN APP PAGES (keeping V14 structure with enhancements)
-   // ============================================================================
-
-   const WelcomePage = ({ onGetStarted, onLoginExpert }) => {
-     const [showVideo, setShowVideo] = useState(false);
-     
-     useEffect(() => {
-       analytics.trackPageView('welcome');
-     }, []);
-     
-     return React.createElement('div', { 
-       className: 'min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 smooth-scroll' 
-     },
-       React.createElement('div', { className: 'safe-area-top' },
-         React.createElement('div', { className: 'container mx-auto px-4 py-8' },
-           // Header with Logo
-           React.createElement('div', { className: 'flex items-center justify-between mb-12' },
-             React.createElement('div', { className: 'flex items-center gap-2' },
-               React.createElement('div', { className: 'text-3xl' }, '🔧'),
-               React.createElement('h1', { className: 'text-2xl font-bold text-gray-800' }, 'DIYMatch')
-             ),
-             React.createElement('div', { className: 'text-2xl cursor-pointer' }, '🌙')
-           ),
-
-           // Main Hero Section
-           React.createElement('div', { className: 'text-center mb-16 fade-in' },
-             React.createElement('h1', { className: 'text-5xl font-bold mb-6' },
-               React.createElement('span', { className: 'text-gray-800' }, 'Welcome to '),
-               React.createElement('span', { className: 'text-blue-600' }, 'DIYMatch')
-             ),
-             React.createElement('p', { className: 'text-xl text-gray-600 max-w-3xl mx-auto mb-12' }, 
-               'AI-powered DIY assistant that instantly analyzes your home problems and connects you with verified local experts'
-             ),
-             React.createElement('p', { className: 'text-lg text-gray-500 max-w-4xl mx-auto mb-16 leading-relaxed' },
-               'Whether you\'re stuck on a home repair, need expert guidance, or want instant AI-powered solutions to your DIY problems, DIYMatch bridges the gap between those who need help and skilled professionals ready to assist.'
-             ),
-
-             // Main Action Buttons
-             React.createElement('div', { className: 'flex flex-col sm:flex-row gap-4 justify-center max-w-4xl mx-auto mb-16' },
-               React.createElement('button', {
-                 onClick: () => {
-                   onGetStarted();
-                   triggerHaptic('medium');
-                 },
-                 className: 'flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105 mobile-touch'
-               }, 
-                 React.createElement('span', { className: 'flex items-center justify-center gap-3' },
-                   React.createElement('span', { className: 'text-2xl' }, '🔍'),
-                   React.createElement('span', null, 'Get FREE AI Analysis')
-                 )
-               ),
-               
-               React.createElement('button', {
-                 onClick: () => {
-                   onLoginExpert();
-                   triggerHaptic('medium');
-                 },
-                 className: 'flex-1 bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:shadow-lg transition-all transform hover:scale-105 mobile-touch'
-               },
-                 React.createElement('span', { className: 'flex items-center justify-center gap-3' },
-                   React.createElement('span', { className: 'text-2xl' }, '👨‍🔧'),
-                   React.createElement('span', null, 'Join as Expert')
-                 )
-               ),
-
-               React.createElement('button', {
-                 onClick: () => {
-                   // Show login modal or navigate to login
-                   alert('Sign In functionality - will navigate to login');
-                 },
-                 className: 'flex-1 bg-white border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-gray-50 hover:shadow-md transition-all mobile-touch'
-               },
-                 React.createElement('span', { className: 'flex items-center justify-center gap-3' },
-                   React.createElement('span', { className: 'text-2xl' }, '🔑'),
-                   React.createElement('span', null, 'Sign In')
-                 )
-               )
-             )
-           ),
-
-           // How DIYMatch Works Section
-           React.createElement('div', { className: 'mb-16' },
-             React.createElement('h2', { className: 'text-4xl font-bold text-center mb-12 text-gray-800' }, 
-               'How DIYMatch Works'
-             ),
-             
-             React.createElement('div', { className: 'grid md:grid-cols-3 gap-8 max-w-6xl mx-auto' },
-               // FREE AI Analysis
-               React.createElement('div', { className: 'feature-card' },
-                 React.createElement('div', { className: 'feature-icon' }, '🤖'),
-                 React.createElement('h3', { className: 'text-2xl font-bold mb-4 text-gray-800' }, 'FREE AI Analysis'),
-                 React.createElement('p', { className: 'text-gray-600 leading-relaxed' }, 
-                   'Upload a photo and get completely free problem identification, with detailed analysis and safety warnings.'
-                 )
-               ),
-               
-               // Expert Connection
-               React.createElement('div', { className: 'feature-card' },
-                 React.createElement('div', { className: 'feature-icon' }, '🎯'),
-                 React.createElement('h3', { className: 'text-2xl font-bold mb-4 text-gray-800' }, 'Expert Connection'),
-                 React.createElement('p', { className: 'text-gray-600 leading-relaxed' }, 
-                   'When DIY isn\'t enough, instantly connect with verified local professionals who can help.'
-                 )
-               ),
-               
-               // Safety First
-               React.createElement('div', { className: 'feature-card' },
-                 React.createElement('div', { className: 'feature-icon' }, '🛡️'),
-                 React.createElement('h3', { className: 'text-2xl font-bold mb-4 text-gray-800' }, 'Safety First'),
-                 React.createElement('p', { className: 'text-gray-600 leading-relaxed' }, 
-                   'Our AI knows when a job requires professional help and will recommend expert assistance for safety.'
-                 )
-               )
-             )
-           ),
-
-           // Free Analysis Banner
-           React.createElement('div', { 
-             className: 'bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 max-w-4xl mx-auto mb-8 text-white shadow-lg' 
-           },
-             React.createElement('h3', { 
-               className: 'text-2xl font-bold mb-2 flex items-center justify-center gap-2' 
-             },
-               React.createElement('span', { className: 'text-3xl' }, '🎉'),
-               'First AI Analysis FREE Every Month!'
-             ),
-             React.createElement('p', { className: 'text-center text-lg' },
-               `New users get their first problem analysis completely free. Additional analyses only £${APP_CONFIG.aiAnalysisPrice}.`
-             )
-           ),
-
-           // Trust Indicators
-           React.createElement('div', { className: 'text-center mb-8' },
-             React.createElement('div', { className: 'flex justify-center gap-8 mb-4' },
-               React.createElement('div', null,
-                 React.createElement('div', { className: 'text-3xl font-bold text-blue-600' }, '10K+'),
-                 React.createElement('div', { className: 'text-gray-600' }, 'Active Users')
-               ),
-               React.createElement('div', null,
-                 React.createElement('div', { className: 'text-3xl font-bold text-green-600' }, '500+'),
-                 React.createElement('div', { className: 'text-gray-600' }, 'Verified Experts')
-               ),
-               React.createElement('div', null,
-                 React.createElement('div', { className: 'text-3xl font-bold text-purple-600' }, '4.8★'),
-                 React.createElement('div', { className: 'text-gray-600' }, 'App Rating')
-               )
-             )
-           ),
-
-           // Get in Touch Section
-           React.createElement('div', { className: 'text-center bg-white rounded-2xl p-12 shadow-xl max-w-4xl mx-auto' },
-             React.createElement('div', { className: 'flex items-center justify-center gap-3 mb-6' },
-               React.createElement('div', { className: 'text-4xl' }, '📞'),
-               React.createElement('h2', { className: 'text-3xl font-bold text-gray-800' }, 'Get in Touch')
-             ),
-             React.createElement('p', { className: 'text-xl text-gray-600 mb-8 max-w-2xl mx-auto' },
-               'Have questions about DIYMatch? Need support? We\'re here to help!'
-             ),
-             React.createElement('button', {
-               onClick: () => {
-                 window.open(`mailto:${APP_CONFIG.supportEmail}`, '_blank');
-               },
-               className: 'bg-blue-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 mobile-touch shadow-lg'
-             },
-               React.createElement('span', { className: 'flex items-center gap-3' },
-                 React.createElement('span', { className: 'text-2xl' }, '💬'),
-                 React.createElement('span', null, 'Contact Us')
-               )
-             )
-           )
-         )
-       ),
-       
-       // Video Modal
-       showVideo && React.createElement(Modal, {
-         isOpen: showVideo,
-         onClose: () => setShowVideo(false),
-         title: 'DIYMatch Demo',
-         size: 'large'
-       },
-         React.createElement('div', { className: 'aspect-video bg-gray-200 rounded-lg flex items-center justify-center' },
-           React.createElement('div', { className: 'text-center' },
-             React.createElement('div', { className: 'text-6xl mb-4' }, '🎥'),
-             React.createElement('p', { className: 'text-gray-600' }, 'Demo video coming soon!')
-           )
-         )
-       )
-     );
-   };
-
-   // ============================================================================
-   // ENHANCED USER DASHBOARD (keeping V14 structure)
-   // ============================================================================
-
-   const UserDashboard = ({ user, onLogout }) => {
-     const [activeTab, setActiveTab] = useState('home');
-     const [analysisHistory, setAnalysisHistory] = useState([]);
-     const [notifications, setNotifications] = useState([]);
-     const [savedExperts, setSavedExperts] = useState([]);
-     const [showSupportChat, setShowSupportChat] = useState(false);
-     
-     useEffect(() => {
-       // Load user data
-       const userAnalyses = aiAnalysisHistory.get(user.email) || [];
-       setAnalysisHistory(userAnalyses);
-       
-       const userNotifs = userNotifications.get(user.email) || [];
-       setNotifications(userNotifs);
-       
-       setSavedExperts(user.savedExperts || []);
-       
-       analytics.trackPageView('user_dashboard');
-       setCurrentUser(user);
-     }, [user]);
-     
-     const handleTabChange = (tab) => {
-       setActiveTab(tab);
-       triggerHaptic('light');
-       analytics.track('tab_changed', { tab });
-     };
-     
-     const renderHomeTab = () => {
-       const recentAnalysis = analysisHistory[0];
-       const freeAvailable = checkFreeAnalysisAvailable(user.email);
-       
-       return React.createElement('div', { className: 'space-y-6 fade-in' },
-         // Welcome Card
-         React.createElement('div', { 
-           className: 'bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white shadow-lg' 
-         },
-           React.createElement('h2', { className: 'text-2xl font-bold mb-2' }, 
-             `Welcome back, ${user.name}!`
-           ),
-           React.createElement('p', { className: 'mb-4 opacity-90' }, 
-             'What can we help you fix today?'
-           )
-         ),
-
-         // Quick Actions
-         React.createElement('div', { className: 'grid grid-cols-2 md:grid-cols-4 gap-4' },
-           React.createElement('button', {
-             onClick: () => handleTabChange('analyze'),
-             className: 'mobile-touch bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg'
-           },
-             React.createElement('div', { className: 'text-3xl mb-2' }, '📸'),
-             React.createElement('div', { className: 'font-semibold' }, 'New Analysis'),
-             React.createElement('div', { className: 'text-xs opacity-80 mt-1' },
-               freeAvailable ? '✨ FREE this month!' : `£${APP_CONFIG.aiAnalysisPrice}`
-             )
-           ),
-           
-           React.createElement('button', {
-             onClick: () => handleTabChange('experts'),
-             className: 'mobile-touch bg-green-600 text-white p-6 rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg'
-           },
-             React.createElement('div', { className: 'text-3xl mb-2' }, '👨‍🔧'),
-             React.createElement('div', { className: 'font-semibold' }, 'Find Experts'),
-             React.createElement('div', { className: 'text-xs opacity-80 mt-1' }, 'Verified pros')
-           ),
-           
-           React.createElement('button', {
-             onClick: () => handleTabChange('emergency'),
-             className: 'mobile-touch emergency-button text-white p-6 rounded-xl hover:opacity-90 transition-all transform hover:scale-105 shadow-lg'
-           },
-             React.createElement('div', { className: 'text-3xl mb-2' }, '🚨'),
-             React.createElement('div', { className: 'font-semibold' }, 'Emergency'),
-             React.createElement('div', { className: 'text-xs opacity-80 mt-1' }, '24/7 help')
-           ),
-           
-           React.createElement('button', {
-             onClick: () => handleTabChange('parts'),
-             className: 'mobile-touch bg-purple-600 text-white p-6 rounded-xl hover:bg-purple-700 transition-all transform hover:scale-105 shadow-lg'
-           },
-             React.createElement('div', { className: 'text-3xl mb-2' }, '🛠️'),
-             React.createElement('div', { className: 'font-semibold' }, 'Find Parts'),
-             React.createElement('div', { className: 'text-xs opacity-80 mt-1' }, 'Near you')
-           )
-         ),
-         
-         // Recent Analysis
-         recentAnalysis && React.createElement('div', { className: 'bg-white rounded-xl shadow-lg p-6' },
-           React.createElement('h3', { className: 'text-xl font-semibold mb-4 flex items-center gap-2' },
-             React.createElement('span', null, '📊'),
-             'Recent Analysis'
-           ),
-           React.createElement('div', {
-             className: 'bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-all',
-             onClick: () => handleTabChange('history')
-           },
-             React.createElement('div', { className: 'flex justify-between items-start mb-2' },
-               React.createElement('h4', { className: 'font-semibold' }, recentAnalysis.problemDetected),
-               React.createElement('span', {
-                 className: `px-3 py-1 rounded-full text-sm ${
-                   recentAnalysis.severity === 'Critical' ? 'bg-red-100 text-red-800' :
-                   recentAnalysis.severity === 'High' ? 'bg-orange-100 text-orange-800' :
-                   'bg-yellow-100 text-yellow-800'
-                 }`
-               }, recentAnalysis.severity)
-             ),
-             React.createElement('p', { className: 'text-sm text-gray-600 mb-2' }, 
-               recentAnalysis.description.substring(0, 100) + '...'
-             ),
-             React.createElement('div', { className: 'flex justify-between text-sm' },
-               React.createElement('span', { className: 'text-gray-500' },
-                 new Date(recentAnalysis.timestamp).toLocaleDateString()
-               ),
-               React.createElement('span', { className: 'text-blue-600 font-medium' }, 
-                 'View Details →'
-               )
-             )
-           )
-         ),
-         
-         // AI Suggestions
-         React.createElement('div', { className: 'bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6' },
-           React.createElement('h3', { className: 'text-xl font-semibold mb-4 flex items-center gap-2' },
-             React.createElement('span', null, '✨'),
-             'AI Recommendations'
-           ),
-           React.createElement('div', { className: 'space-y-3' },
-             React.createElement(AISuggestionCard, {
-               suggestion: {
-                 type: 'preventive',
-                 action: 'Schedule annual boiler service before winter',
-                 confidence: 92
-               },
-               onAccept: () => {
-                 handleTabChange('experts');
-                 analytics.track('ai_suggestion_accepted', { type: 'preventive' });
-               },
-               onReject: () => analytics.track('ai_suggestion_rejected', { type: 'preventive' })
-             }),
-             React.createElement('div', { 
-               className: 'bg-white rounded-lg p-4 border border-blue-200' 
-             },
-               React.createElement('p', { className: 'text-sm' },
-                 '💡 Based on your location, we recommend checking gutters before the rainy season.'
-               )
-             )
-           )
-         ),
-         
-         // Saved Experts
-         savedExperts.length > 0 && React.createElement('div', { 
-           className: 'bg-white rounded-xl shadow-lg p-6' 
-         },
-           React.createElement('h3', { className: 'text-xl font-semibold mb-4 flex items-center gap-2' },
-             React.createElement('span', null, '⭐'),
-             'Your Saved Experts'
-           ),
-           React.createElement('div', { className: 'grid gap-3' },
-             savedExperts.slice(0, 3).map(expertId => {
-               const expert = expertProfiles.get(expertId);
-               if (!expert) return null;
-               
-               return React.createElement('div', {
-                 key: expertId,
-                 className: 'flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all cursor-pointer',
-                 onClick: () => handleTabChange('experts')
-               },
-                 React.createElement('div', { className: 'flex items-center gap-3' },
-                   React.createElement('div', { 
-                     className: 'w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl' 
-                   }, '👨‍🔧'),
-                   React.createElement('div', null,
-                     React.createElement('div', { className: 'font-medium' }, expert.name),
-                     React.createElement('div', { className: 'text-sm text-gray-600' }, expert.profession)
-                   )
-                 ),
-                 React.createElement('div', { className: 'text-right' },
-                   React.createElement(StarRating, { rating: expert.rating, readonly: true, size: 'small' }),
-                   React.createElement('div', { className: 'text-xs text-gray-500' }, 
-                     `£${expert.hourlyRate}/hr`
-                   )
-                 )
-               );
-             })
-           )
-         )
-       );
-     };
-     
-     const renderAnalyzeTab = () => React.createElement(AIAnalysisPage, { 
-       user,
-       onComplete: (analysis) => {
-         const updatedHistory = [analysis, ...analysisHistory];
-         setAnalysisHistory(updatedHistory);
-         aiAnalysisHistory.set(user.email, updatedHistory);
-       }
-     });
-     
-     const renderExpertsTab = () => React.createElement(ExpertSearchPage, { 
-       user,
-       savedExperts,
-       onToggleSave: (expertId) => {
-         const newSaved = savedExperts.includes(expertId)
-           ? savedExperts.filter(id => id !== expertId)
-           : [...savedExperts, expertId];
-         setSavedExperts(newSaved);
-         user.savedExperts = newSaved;
-         registeredUsers.set(user.email, user);
-       }
-     });
-     
-     const renderEmergencyTab = () => React.createElement(EmergencyHelpPage, { user });
-     
-     const renderPartsTab = () => React.createElement(PartsFinderPage, { user });
-     
-     const renderHistoryTab = () => React.createElement(AnalysisHistoryPage, { 
-       history: analysisHistory,
-       onViewDetails: (analysis) => {
-         // Could implement detailed view modal
-         console.log('View details:', analysis);
-       }
-     });
-     
-     const renderProfileTab = () => React.createElement(UserProfilePage, { 
-       user,
-       onUpdate: (updates) => {
-         Object.assign(user, updates);
-         registeredUsers.set(user.email, user);
-         setCurrentUser(user);
-       }
-     });
-     
-     return React.createElement('div', { className: 'min-h-screen bg-gray-50' },
-       // Header
-       React.createElement('div', { className: 'safe-area-top bg-white shadow-sm sticky top-0 z-50' },
-         React.createElement('div', { className: 'container mx-auto px-4 py-4' },
-           React.createElement('div', { className: 'flex justify-between items-center' },
-             React.createElement('h1', { 
-               className: 'text-2xl font-bold flex items-center cursor-pointer',
-               onClick: () => handleTabChange('home')
-             },
-               React.createElement('span', { className: 'text-3xl mr-2' }, '🔧'),
-               ' DIYMatch'
-             ),
-             React.createElement('div', { className: 'flex items-center gap-4' },
-               React.createElement('div', { className: 'relative' },
-                 React.createElement('button', { 
-                   className: 'text-2xl mobile-touch',
-                   onClick: () => {
-                     const unread = notifications.filter(n => !n.read);
-                     if (unread.length > 0) {
-                       // Mark all as read
-                       notifications.forEach(n => n.read = true);
-                       setNotifications([...notifications]);
-                       userNotifications.set(user.email, notifications);
-                     }
-                     // Show notifications modal
-                     alert(`You have ${notifications.length} notifications`);
-                   }
-                 }, '🔔'),
-                 notifications.filter(n => !n.read).length > 0 &&
-                 React.createElement('span', { className: 'notification-badge' },
-                   notifications.filter(n => !n.read).length
-                 )
-               ),
-               React.createElement('button', {
-                 onClick: () => {
-                   if (confirm('Are you sure you want to logout?')) {
-                     onLogout();
-                     triggerHaptic('medium');
-                   }
-                 },
-                 className: 'text-gray-600 hover:text-gray-800 mobile-touch'
-               }, 'Logout')
-             )
-           )
-         )
-       ),
-       
-       // Main Content
-       React.createElement('div', { 
-         className: 'container mx-auto px-4 py-6 pb-20 smooth-scroll',
-         style: { minHeight: 'calc(100vh - 120px)' }
-       },
-         activeTab === 'home' && renderHomeTab(),
-         activeTab === 'analyze' && renderAnalyzeTab(),
-         activeTab === 'experts' && renderExpertsTab(),
-         activeTab === 'emergency' && renderEmergencyTab(),
-         activeTab === 'parts' && renderPartsTab(),
-         activeTab === 'history' && renderHistoryTab(),
-         activeTab === 'profile' && renderProfileTab()
-       ),
-       
-       // Bottom Navigation
-       React.createElement('div', { className: 'bottom-nav safe-area-bottom' },
-         React.createElement('button', {
-           onClick: () => handleTabChange('home'),
-           className: `bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`
-         },
-           React.createElement('div', { className: 'bottom-nav-icon' }, '🏠'),
-           React.createElement('span', null, 'Home')
-         ),
-         React.createElement('button', {
-           onClick: () => handleTabChange('analyze'),
-           className: `bottom-nav-item ${activeTab === 'analyze' ? 'active' : ''}`
-         },
-           React.createElement('div', { className: 'bottom-nav-icon' }, '📸'),
-           React.createElement('span', null, 'Analyze')
-         ),
-         React.createElement('button', {
-           onClick: () => handleTabChange('experts'),
-           className: `bottom-nav-item ${activeTab === 'experts' ? 'active' : ''}`
-         },
-           React.createElement('div', { className: 'bottom-nav-icon' }, '👨‍🔧'),
-           React.createElement('span', null, 'Experts')
-         ),
-         React.createElement('button', {
-           onClick: () => handleTabChange('history'),
-           className: `bottom-nav-item ${activeTab === 'history' ? 'active' : ''}`
-         },
-           React.createElement('div', { className: 'bottom-nav-icon' }, '📋'),
-           React.createElement('span', null, 'History')
-         ),
-         React.createElement('button', {
-           onClick: () => handleTabChange('profile'),
-           className: `bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`
-         },
-           React.createElement('div', { className: 'bottom-nav-icon' }, '👤'),
-           React.createElement('span', null, 'Profile')
-         )
-       ),
-       
-       // Support Chat Button
-       React.createElement('button', {
-         onClick: () => {
-           setShowSupportChat(true);
-           triggerHaptic('medium');
-         },
-         className: 'fixed bottom-24 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center mobile-touch hover:bg-blue-700 transition-all z-40'
-       },
-         React.createElement('span', { className: 'text-2xl' }, '💬')
-       ),
-       
-       // Support Chat Modal
-       showSupportChat && React.createElement(SupportChatModal, {
-         user,
-         onClose: () => setShowSupportChat(false)
-       })
-     );
-   };
-
-   // Continue with remaining components...
+   console.log('🔧 DIYMatch Self-Contained App Loaded');
+   console.log('📱 Version:', APP_CONFIG.version);
+ </script>
+</body>
+</html>
